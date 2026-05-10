@@ -2,25 +2,25 @@ import { navItems, siteConfig } from "@/lib/constants";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-emerald-400/15 bg-slate-950/75 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-6">
         <a href="#top" className="group font-mono text-sm font-semibold text-slate-100">
-          <span className="text-green-400">~/</span>
-          {siteConfig.name.toLowerCase().replace(" ", "-")}
-          <span className="text-green-400 transition group-hover:ml-1">_</span>
+          <span className="text-emerald-400">{`<`}</span>
+          {siteConfig.name.split(" ")[0]}
+          <span className="text-emerald-400">{` />`}</span>
         </a>
 
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-sm text-slate-400 transition hover:text-green-400"
-            >
+            <a key={item.href} href={item.href} className="nav-pill">
               {item.label}
             </a>
           ))}
         </div>
+
+        <a className="hidden rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950 transition hover:bg-emerald-300 sm:inline-flex" href={`mailto:${siteConfig.email}`}>
+          Hire / Contact
+        </a>
       </nav>
     </header>
   );
