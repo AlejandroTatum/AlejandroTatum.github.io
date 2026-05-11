@@ -16,8 +16,8 @@ export function Navbar({ locale, onToggleLocale }: NavbarProps) {
   ];
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-emerald-400/15 bg-slate-950/75 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-6">
+    <header className="sticky top-0 z-50 px-4 py-3">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-emerald-400/15 bg-slate-950/90 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-6">
         <a href="#top" className="group font-mono text-sm font-semibold text-slate-100">
           <span className="text-emerald-400">{`<`}</span>
           {siteConfig.name.split(" ")[0]}

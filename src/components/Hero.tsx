@@ -9,7 +9,7 @@ export function Hero({ locale }: HeroProps) {
   const t = copy[locale].hero;
 
   return (
-    <section id="top" className="relative min-h-screen overflow-hidden px-5 pb-16 pt-32 sm:pt-40">
+    <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:pt-20 lg:pt-28">
       <div className="hero-glow" />
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
         <div>
@@ -24,7 +24,7 @@ export function Hero({ locale }: HeroProps) {
           <p className="mt-4 text-2xl font-semibold text-slate-200 sm:text-3xl">{t.role}</p>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{t.description}</p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="hero-actions mt-8 grid gap-3 sm:flex sm:flex-wrap">
             <a className="btn-primary" href="#projects">
               {t.viewProjects}
             </a>
@@ -39,7 +39,7 @@ export function Hero({ locale }: HeroProps) {
             </a>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+          <div className="hero-metrics mt-10 grid max-w-xl gap-3 sm:grid-cols-3">
             {t.metrics.map((metric) => (
               <div key={metric.label} className="metric-card">
                 <p className="text-2xl font-black text-white">{metric.value}</p>
@@ -49,7 +49,7 @@ export function Hero({ locale }: HeroProps) {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-md">
+        <div className="relative mx-auto mt-4 w-full max-w-md lg:mt-0">
           <div className="absolute -inset-6 rounded-[2rem] bg-emerald-400/10 blur-3xl" />
           <div className="profile-card">
             <div className="relative mx-auto h-48 w-48 overflow-hidden rounded-[2rem] border border-emerald-300/30 bg-slate-900 shadow-2xl shadow-emerald-950/40">
