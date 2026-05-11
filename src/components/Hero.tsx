@@ -33,7 +33,7 @@ export function Hero() {
             <a className="btn-primary" href="#projects">
               View Projects
             </a>
-            <a className="btn-secondary" href={`mailto:${siteConfig.email}`}>
+            <a className="btn-secondary" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
               Contact Me
             </a>
             <a className="btn-ghost" href={siteConfig.github} target="_blank" rel="noreferrer">

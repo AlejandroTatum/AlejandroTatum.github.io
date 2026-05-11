@@ -18,7 +18,7 @@ export function Navbar() {
           ))}
         </div>
 
-        <a className="hidden rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950 transition hover:bg-emerald-300 sm:inline-flex" href={`mailto:${siteConfig.email}`}>
+        <a className="hidden rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950 transition hover:bg-emerald-300 sm:inline-flex" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
           Hire / Contact
         </a>
       </nav>
