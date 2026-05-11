@@ -1,7 +1,13 @@
-export function Footer() {
+import { copy, type Locale } from "@/lib/i18n";
+
+type FooterProps = {
+  locale: Locale;
+};
+
+export function Footer({ locale }: FooterProps) {
   return (
-    <footer className="border-t border-slate-800/80 px-5 py-8 text-center text-sm text-slate-500">
-      <p>Built with Next.js, TypeScript, Tailwind CSS and GitHub Pages.</p>
+    <footer className="site-footer">
+      <p>{copy[locale].footer}</p>
     </footer>
   );
 }

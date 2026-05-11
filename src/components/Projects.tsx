@@ -1,15 +1,19 @@
 import { projects } from "@/data/projects";
+import { copy, type Locale } from "@/lib/i18n";
 
-export function Projects() {
+type ProjectsProps = {
+  locale: Locale;
+};
+
+export function Projects({ locale }: ProjectsProps) {
+  const t = copy[locale].projects;
+
   return (
     <section id="projects" className="section-shell">
       <div className="section-heading">
-        <p className="section-kicker">$ featured-projects</p>
-        <h2>Projects with documentation and runnable setup.</h2>
-        <p>
-          These are academic projects, but they are cleaned, documented and positioned as
-          evidence of fundamentals: Java, data structures, algorithms and CSV data handling.
-        </p>
+        <p className="section-kicker">{t.kicker}</p>
+        <h2>{t.title}</h2>
+        <p>{t.intro}</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -30,23 +34,23 @@ export function Projects() {
                   <div className="h-16 rounded-lg bg-cyan-400/15" />
                   <div className="h-16 rounded-lg bg-emerald-400/20" />
                 </div>
-                <p className="text-slate-500">status: documented · build: passing · type: academic</p>
+                <p className="text-slate-500">{t.status}</p>
               </div>
             </div>
 
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <span className="rounded-full border border-emerald-400/20 px-3 py-1 font-mono text-xs text-emerald-300">
-                  0{index + 1} / repo
+                  0{index + 1} / {t.repoLabel}
                 </span>
-                <span className="text-xs text-slate-500">Java · Maven</span>
+                <span className="text-xs text-slate-500">{t.stackLabel}</span>
               </div>
 
               <h3 className="text-2xl font-black text-white">{project.title}</h3>
-              <p className="mt-4 leading-7 text-slate-300">{project.description}</p>
+              <p className="mt-4 leading-7 text-slate-300">{project.description[locale]}</p>
 
               <ul className="mt-6 space-y-3 text-sm text-slate-400">
-                {project.highlights.map((highlight) => (
+                {project.highlights[locale].map((highlight) => (
                   <li key={highlight}>
                     <span className="text-emerald-400">▸</span> {highlight}
                   </li>
@@ -62,7 +66,7 @@ export function Projects() {
               </div>
 
               <a className="mt-7 inline-flex rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300" href={project.href} target="_blank" rel="noreferrer">
-                View repository →
+                {t.viewRepo}
               </a>
             </div>
           </article>
