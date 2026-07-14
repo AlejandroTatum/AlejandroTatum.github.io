@@ -8,14 +8,14 @@ export type SkillGroup = {
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: { en: "Languages", es: "Lenguajes" },
-    subtitle: { en: "Core syntax and problem solving", es: "Sintaxis base y resolución de problemas" },
-    items: ["Java", "TypeScript", "SQL"],
+    title: { en: "Automation & AI", es: "Automatización e IA" },
+    subtitle: { en: "Workflows, agents and document systems", es: "Flujos, agentes y sistemas documentales" },
+    items: ["Python", "AI Agents", "Report Automation", "Document Generation", "Validation Workflows"],
   },
   {
     title: { en: "Backend & Data", es: "Backend y datos" },
     subtitle: { en: "APIs, persistence and data handling", es: "APIs, persistencia y manejo de datos" },
-    items: ["PostgreSQL", "Maven", "CSV data handling", "Prisma learning"],
+    items: ["Java", "PostgreSQL", "SQL", "Prisma", "Maven", "CSV Data Processing"],
   },
   {
     title: { en: "Frontend", es: "Frontend" },
@@ -28,8 +28,8 @@ export const skillGroups: SkillGroup[] = [
     items: ["Git", "GitHub", "Docker", "Linux"],
   },
   {
-    title: { en: "Foundations", es: "Fundamentos" },
-    subtitle: { en: "Computer science fundamentals", es: "Fundamentos de computación" },
-    items: ["Data Structures", "Algorithms", "Search", "Sorting", "OOP"],
+    title: { en: "Delivery", es: "Entrega" },
+    subtitle: { en: "Documented, reproducible software", es: "Software documentado y reproducible" },
+    items: ["GitHub Actions", "GitHub Pages", "Testing", "Documentation", "Responsive UI"],
   },
 ];

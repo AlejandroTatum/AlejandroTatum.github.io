@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { siteConfig } from "@/lib/constants";
+import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { copy, type Locale } from "@/lib/i18n";
 
 type NavbarProps = {
@@ -8,6 +12,7 @@ type NavbarProps = {
 
 export function Navbar({ locale, onToggleLocale }: NavbarProps) {
   const t = copy[locale].nav;
+  const [scrolled, setScrolled] = useState(false);
   const navItems = [
     { label: t.about, href: "#about" },
     { label: t.stack, href: "#stack" },
@@ -15,13 +20,25 @@ export function Navbar({ locale, onToggleLocale }: NavbarProps) {
     { label: t.contact, href: "#contact" },
   ];
 
+  // Shift the navbar surface once the page scrolls past the hero top.
+  useGSAP(() => {
+    const trigger = ScrollTrigger.create({
+      start: 120,
+      end: "max",
+      onToggle: (self) => setScrolled(self.isActive),
+    });
+    return () => trigger.kill();
+  });
+
   return (
     <header className="sticky top-0 z-50 px-4 py-3">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-emerald-400/15 bg-slate-950/90 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-6">
-        <a href="#top" className="group font-mono text-sm font-semibold text-slate-100">
-          <span className="text-emerald-400">{`<`}</span>
+      <nav
+        className={`site-nav mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 ${scrolled ? "nav-scrolled" : ""}`}
+      >
+        <a href="#top" className="group font-mono text-sm font-bold text-ink">
+          <span className="text-ink-soft">{`<`}</span>
           {siteConfig.name.split(" ")[0]}
-          <span className="text-emerald-400">{` />`}</span>
+          <span className="text-ink-soft">{` />`}</span>
         </a>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -43,7 +60,7 @@ export function Navbar({ locale, onToggleLocale }: NavbarProps) {
             <span className={locale === "es" ? "active" : ""}>ES</span>
           </button>
           <a
-            className="hidden rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950 transition hover:bg-emerald-300 sm:inline-flex"
+            className="btn-nav hidden sm:inline-flex"
             href={siteConfig.emailHref}
             target="_blank"
             rel="noreferrer"
