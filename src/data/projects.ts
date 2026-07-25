@@ -53,7 +53,7 @@ export const projects: Project[] = [
     title: "El Horno del Pingüino",
     category: "production",
     image: "/pixel/project-horno-pixel.png",
-    demoUrl: "https://el-horno-del-pinguino-landing-page.onrender.com/",
+    demoUrl: "https://el-horno-del-pinguino-landing-page.pages.dev/",
     description: {
       en: "End-to-end frontend implementation for a local bakery, designed to present its catalog, business-order offering and direct WhatsApp conversion path.",
       es: "Implementación frontend de extremo a extremo para una pastelería local, diseñada para presentar su catálogo, oferta para negocios y ruta de conversión directa por WhatsApp.",
