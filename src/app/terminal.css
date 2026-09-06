@@ -985,6 +985,27 @@
   margin-left: 1.7rem;
 }
 
+/* Hovering the directory line reads as "focused" — color-only for every
+   hover-capable device, plus a blinking cursor once motion is allowed. */
+@media (hover: hover) {
+  .proto-stack-group:hover .tree-dir {
+    color: var(--tcyan);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .proto-stack-group:hover .tree-dir::after {
+    content: "";
+    display: inline-block;
+    width: 0.5em;
+    height: 0.95em;
+    margin-left: 0.15em;
+    vertical-align: text-bottom;
+    background: var(--tcyan);
+    animation: proto-blink 1.05s steps(2, jump-none) infinite;
+  }
+}
+
 .stack-tile {
   display: flex;
   align-items: center;
@@ -995,19 +1016,55 @@
   padding: 0.55rem 0.7rem;
   font-size: 0.8rem;
   color: var(--ttext);
-  transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
 }
 
-.stack-tile:hover {
-  border-color: color-mix(in srgb, var(--grp) 60%, var(--tborder));
-  background: color-mix(in srgb, var(--grp) 7%, var(--tpanel-2));
-  transform: translateY(-1px);
+/* Color-only feedback for hover-capable devices, motion or not. */
+@media (hover: hover) {
+  .stack-tile:hover {
+    border-color: var(--tcyan);
+  }
+}
+
+/* Full hover life once motion is allowed: lift + hard pixel shadow. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .stack-tile {
+    transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  }
+
+  .stack-tile:hover {
+    background: color-mix(in srgb, var(--tcyan) 10%, var(--tpanel-2));
+    transform: translateY(-1px);
+    box-shadow: 2px 2px 0 var(--tcyan);
+  }
 }
 
 .stack-tile-icon {
   flex: none;
   font-size: 1.05rem;
   color: var(--grp);
+}
+
+/* Per-group collapse toggle on small viewports — same voice as the archive
+   `ls -a` toggle, just pinned to the end of the directory line. */
+.proto-stack-toggle {
+  margin-left: auto;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+}
+
+@media (max-width: 480px) {
+  .proto-stack-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stack-tile span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
 }
 
 /* ---------------- projects ---------------- */
@@ -1045,16 +1102,36 @@
   border-radius: 8px;
   background: var(--tpanel-2);
   padding: 0.95rem 1.05rem;
-  transition: border-color 140ms ease, transform 140ms ease;
 }
 
 .proto-proj + .proto-proj {
   margin-top: 0.8rem;
 }
 
-.proto-proj:hover {
-  border-color: var(--tborder-bright);
-  transform: translateX(3px);
+/* Color-only feedback for hover-capable devices, motion or not. */
+@media (hover: hover) {
+  .proto-proj:hover {
+    border-color: var(--tcyan);
+  }
+}
+
+/* Full hover life once motion is allowed: nudge the card, zoom the preview. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .proto-proj {
+    transition: border-color 140ms ease, transform 140ms ease;
+  }
+
+  .proto-proj:hover {
+    transform: translateX(3px);
+  }
+
+  .proto-featured-img {
+    transition: transform 180ms ease;
+  }
+
+  .proto-proj:hover .proto-featured-img {
+    transform: scale(1.02);
+  }
 }
 
 .proto-proj-head {
@@ -1128,6 +1205,29 @@
 .text-link:hover {
   color: var(--trose-soft);
   border-bottom-color: var(--trose-soft);
+}
+
+/* Growing underline for hover-capable devices: the dashed static underline
+   above stays for touch, this replaces it with an animated fill on hover. */
+@media (hover: hover) {
+  .proto-proj-links .text-link {
+    border-bottom-color: transparent;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 0% 1px;
+    padding-bottom: 2px;
+  }
+
+  .proto-proj-links .text-link:hover {
+    background-size: 100% 1px;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .proto-proj-links .text-link {
+    transition: background-size 150ms ease;
+  }
 }
 
 /* draft badge for entries still being curated */
@@ -1313,6 +1413,10 @@
 
 .proto-featured-preview .tui-window {
   box-shadow: none;
+}
+
+.proto-featured-frame {
+  overflow: hidden;
 }
 
 .proto-featured-img {
@@ -1614,9 +1718,9 @@
   color: var(--tcyan);
 }
 
-.boot-line .boot-ok {
-  color: var(--tgreen);
-  font-weight: 700;
+.boot-line .boot-bar {
+  color: var(--tpeach);
+  white-space: pre;
   flex: none;
 }
 
@@ -1651,9 +1755,7 @@
     display: none;
   }
 
-  .bracket-btn:hover,
-  .proto-proj:hover,
-  .stack-tile:hover {
+  .bracket-btn:hover {
     transform: none;
   }
 

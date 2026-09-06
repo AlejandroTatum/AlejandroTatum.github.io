@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { FaGitAlt, FaGithub, FaHtml5, FaJava, FaLinkedinIn, FaLinux } from "react-icons/fa6";
 import {
   FiCheckSquare,
@@ -50,7 +50,6 @@ import { siteConfig } from "@/lib/constants";
 import { bindTerminalReveals, typeInto } from "@/components/proto/terminal";
 import { TerminalWindow } from "@/components/proto/TerminalWindow";
 import { ContactPrompt, TERMINAL_COMMANDS } from "@/components/proto/ContactPrompt";
-import { DocAutomationPreview } from "@/components/proto/DocAutomationPreview";
 
 /* ------------------------------------------------------------------ */
 /* shared bits                                                         */
@@ -81,6 +80,7 @@ const uiCopy = {
     stackCmd: "open ~/stack",
     stackComment: "# visual mode",
     stackTitle: "stack — capability explorer",
+    stackToggle: "ls",
     gentleName: "gentle-ai",
     gentleComment: "spec-driven dev workflow I use daily",
     projectsCmd: "ls ~/featured",
@@ -99,7 +99,7 @@ const uiCopy = {
     hornoStatus: "live · client site",
     hornoPreview: "elhornodelpinguino.com — live",
     hornoImageAlt: "Preview of the El Horno del Pingüino website",
-    reportPreview: "report build — demo",
+    visitYolo: "open yololab.streamlit.app",
     openSourceTag: "open source",
     sourceLink: "source → github",
     uniBadge: "university work",
@@ -144,6 +144,7 @@ const uiCopy = {
     stackCmd: "open ~/stack",
     stackComment: "# modo visual",
     stackTitle: "stack — explorador de capacidades",
+    stackToggle: "ls",
     gentleName: "gentle-ai",
     gentleComment: "flujo spec-driven que uso a diario",
     projectsCmd: "ls ~/destacados",
@@ -162,7 +163,7 @@ const uiCopy = {
     hornoStatus: "en vivo · sitio de cliente",
     hornoPreview: "elhornodelpinguino.com — en vivo",
     hornoImageAlt: "Vista previa del sitio de El Horno del Pingüino",
-    reportPreview: "compilación de informe — demo",
+    visitYolo: "abrir yololab.streamlit.app",
     openSourceTag: "código abierto",
     sourceLink: "código → github",
     uniBadge: "trabajo universitario",
@@ -237,15 +238,32 @@ function EcuadorFlag({
 }
 
 function CommandLine({ cmd, comment }: { cmd: string; comment?: string }) {
+  const commentRef = useRef<HTMLSpanElement>(null);
+  const retypingRef = useRef(false);
+
+  const retypeComment = () => {
+    const el = commentRef.current;
+    if (!el || !comment || retypingRef.current || prefersReducedMotion()) return;
+    if (typeof window !== "undefined" && !window.matchMedia("(hover: hover)").matches) return;
+    retypingRef.current = true;
+    typeInto(el, comment, 0.4).eventCallback("onComplete", () => {
+      retypingRef.current = false;
+    });
+  };
+
   return (
-    <div className="cmd-line">
+    <div className="cmd-line" onMouseEnter={retypeComment}>
       <span className="cmd-prompt" aria-hidden="true">
         $
       </span>
       <span className="cmd-text" data-typed data-typed-text={cmd}>
         {cmd}
       </span>
-      {comment ? <span className="cmd-comment">{comment}</span> : null}
+      {comment ? (
+        <span className="cmd-comment" ref={commentRef}>
+          {comment}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -394,7 +412,12 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
               <div className="proto-portrait-frame">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/pixel/alejandro-pixel-portrait.png"
+                  src="/pixel/alejandro-pixel-portrait-900.png"
+                  srcSet="/pixel/alejandro-pixel-portrait-480.png 480w, /pixel/alejandro-pixel-portrait-900.png 900w, /pixel/alejandro-pixel-portrait-1400.png 1400w"
+                  sizes="(max-width: 768px) 90vw, 420px"
+                  width={900}
+                  height={672}
+                  fetchPriority="high"
                   alt={t.heroImageAlt}
                   className="proto-portrait-img"
                 />
@@ -644,9 +667,39 @@ const STACK_TREE: Array<{ slug: string; subtitle: Record<Locale, string>; items:
 
 const GROUP_COLORS = ["#ff9ec7", "#7ce8d8", "#ffd6a5", "#c4b5fd", "#9fe8a8"];
 
+/** Below 768px only these lead groups render expanded by default — the rest
+    collapse behind a per-group `ls` toggle, mirroring the archive pattern. */
+const ALWAYS_EXPANDED_COUNT = 3;
+const COLLAPSIBLE_SLUGS = STACK_TREE.slice(ALWAYS_EXPANDED_COUNT).map((group) => group.slug);
+const MOBILE_QUERY = "(max-width: 767px)";
+
 function StackSection({ locale }: { locale: Locale }) {
   const ui = uiCopy[locale];
   const sectionRef = useSectionReveals(locale);
+  // Server and initial client render both expand everything — matches ≥768px
+  // behavior exactly, so there is no hydration mismatch. The effect below
+  // narrows it down once we know the real viewport.
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(COLLAPSIBLE_SLUGS));
+
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY);
+    const applyDefault = (isMobile: boolean) => {
+      setExpandedGroups(new Set(isMobile ? [] : COLLAPSIBLE_SLUGS));
+    };
+    applyDefault(mql.matches);
+    const onChange = (event: MediaQueryListEvent) => applyDefault(event.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  const toggleGroup = (slug: string) => {
+    setExpandedGroups((current) => {
+      const next = new Set(current);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  };
 
   return (
     <section ref={sectionRef} id="stack" data-proto-section="stack" className="proto-section">
@@ -662,33 +715,49 @@ function StackSection({ locale }: { locale: Locale }) {
             <span className="proto-stack-featured-pulse" aria-hidden="true" />
           </div>
 
-          {STACK_TREE.map((group, groupIndex) => (
-            <div
-              key={group.slug}
-              className="proto-stack-group"
-              data-rise
-              style={{ "--grp": GROUP_COLORS[groupIndex % GROUP_COLORS.length] } as CSSProperties}
-            >
-              <div className="proto-stack-dir">
-                <span className="tree-branch" aria-hidden="true">
-                  {groupIndex === STACK_TREE.length - 1 ? "└──" : "├──"}
-                </span>
-                <span className="tree-dir">{group.slug}/</span>
-                <span className="tree-dir-comment"># {group.subtitle[locale]}</span>
+          {STACK_TREE.map((group, groupIndex) => {
+            const isCollapsible = groupIndex >= ALWAYS_EXPANDED_COUNT;
+            const isExpanded = !isCollapsible || expandedGroups.has(group.slug);
+            return (
+              <div
+                key={group.slug}
+                className="proto-stack-group"
+                data-rise
+                style={{ "--grp": GROUP_COLORS[groupIndex % GROUP_COLORS.length] } as CSSProperties}
+              >
+                <div className="proto-stack-dir">
+                  <span className="tree-branch" aria-hidden="true">
+                    {groupIndex === STACK_TREE.length - 1 ? "└──" : "├──"}
+                  </span>
+                  <span className="tree-dir">{group.slug}/</span>
+                  <span className="tree-dir-comment"># {group.subtitle[locale]}</span>
+                  {isCollapsible ? (
+                    <button
+                      type="button"
+                      className="bracket-btn is-ghost proto-archive-btn proto-stack-toggle"
+                      onClick={() => toggleGroup(group.slug)}
+                      aria-expanded={isExpanded}
+                    >
+                      <span className="bracket">[</span> {ui.stackToggle} <span className="bracket">]</span>
+                    </button>
+                  ) : null}
+                </div>
+                {isExpanded ? (
+                  <div className="proto-stack-tiles">
+                    {group.items.map((item) => {
+                      const Icon = STACK_ICONS[item] ?? FiTerminal;
+                      return (
+                        <div key={item} className="stack-tile" data-rise>
+                          <Icon className="stack-tile-icon" aria-hidden="true" />
+                          <span>{item}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </div>
-              <div className="proto-stack-tiles">
-                {group.items.map((item) => {
-                  const Icon = STACK_ICONS[item] ?? FiTerminal;
-                  return (
-                    <div key={item} className="stack-tile" data-rise>
-                      <Icon className="stack-tile-icon" aria-hidden="true" />
-                      <span>{item}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </TerminalWindow>
     </section>
@@ -744,9 +813,9 @@ function ProjectsSection({ locale }: { locale: Locale }) {
   const [showArchive, setShowArchive] = useState(false);
 
   const horno = projects.find((p) => p.title === "El Horno del Pingüino");
-  const report = projects.find((p) => p.title === "academic-report-automation");
+  const yolo = projects.find((p) => p.title === "YOLO Complexity Lab");
   const archive = projects.filter(
-    (p) => p.title !== "El Horno del Pingüino" && p.title !== "academic-report-automation",
+    (p) => p.title !== "El Horno del Pingüino" && p.title !== "YOLO Complexity Lab",
   );
 
   return (
@@ -783,8 +852,20 @@ function ProjectsSection({ locale }: { locale: Locale }) {
             </div>
             <div className="proto-featured-preview">
               <TerminalWindow title={ui.cataclubPreview}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/previews/cataclub.png" alt={ui.cataclubImageAlt} className="proto-featured-img" />
+                <div className="proto-featured-frame">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/previews/cataclub-900.png"
+                    srcSet="/previews/cataclub-900.png 900w, /previews/cataclub.png 1440w"
+                    sizes="(max-width: 768px) 90vw, 440px"
+                    width={900}
+                    height={563}
+                    loading="lazy"
+                    decoding="async"
+                    alt={ui.cataclubImageAlt}
+                    className="proto-featured-img"
+                  />
+                </div>
               </TerminalWindow>
             </div>
           </article>
@@ -822,28 +903,40 @@ function ProjectsSection({ locale }: { locale: Locale }) {
               </div>
               <div className="proto-featured-preview">
                 <TerminalWindow title={ui.hornoPreview}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/previews/horno.png" alt={ui.hornoImageAlt} className="proto-featured-img" />
+                  <div className="proto-featured-frame">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/previews/horno-900.png"
+                      srcSet="/previews/horno-900.png 900w, /previews/horno.png 1440w"
+                      sizes="(max-width: 768px) 90vw, 440px"
+                      width={900}
+                      height={563}
+                      loading="lazy"
+                      decoding="async"
+                      alt={ui.hornoImageAlt}
+                      className="proto-featured-img"
+                    />
+                  </div>
                 </TerminalWindow>
               </div>
             </article>
           ) : null}
 
-          {/* 3 · academic-report-automation — animated terminal demo, open source */}
-          {report ? (
+          {/* 3 · yolo complexity lab — public source, live streamlit demo */}
+          {yolo ? (
             <article className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
                 <div className="proto-proj-head">
                   <span className="proto-rank" style={{ "--rank": "#ffd6a5" } as CSSProperties}>
                     03
                   </span>
-                  <span className="proto-proj-name">▸ {report.title}</span>
-                  <span className="proto-proj-ctx">{report.context[locale]}</span>
+                  <span className="proto-proj-name">▸ {yolo.title}</span>
+                  <span className="proto-proj-ctx">{yolo.context[locale]}</span>
                 </div>
-                <p className="proto-proj-desc">{report.description[locale]}</p>
-                <span className="proto-proj-status">{report.status[locale]}</span>
+                <p className="proto-proj-desc">{yolo.description[locale]}</p>
+                <span className="proto-proj-status">{yolo.status[locale]}</span>
                 <div className="proto-proj-tags">
-                  {report.tags.map((tag) => (
+                  {yolo.tags.map((tag) => (
                     <span key={tag} className="proto-tag">
                       {tag}
                     </span>
@@ -851,16 +944,39 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                   <span className="proto-tag is-open">{ui.openSourceTag}</span>
                 </div>
                 <div className="proto-proj-links">
-                  {report.sourceUrl ? (
-                    <a className="text-link" href={report.sourceUrl} target="_blank" rel="noreferrer">
+                  {yolo.sourceUrl ? (
+                    <a className="text-link" href={yolo.sourceUrl} target="_blank" rel="noreferrer">
                       {ui.sourceLink}
                     </a>
                   ) : null}
                 </div>
+                {yolo.demoUrl ? (
+                  <a
+                    className="bracket-btn proto-site-btn"
+                    href={yolo.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span className="bracket">[</span> {ui.visitYolo} ↗ <span className="bracket">]</span>
+                  </a>
+                ) : null}
               </div>
               <div className="proto-featured-preview">
-                <TerminalWindow title={ui.reportPreview}>
-                  <DocAutomationPreview />
+                <TerminalWindow title={ui.yoloPreviewTitle}>
+                  <div className="proto-featured-frame">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/previews/yololab-900.png"
+                      srcSet="/previews/yololab-900.png 900w, /previews/yololab.png 1440w"
+                      sizes="(max-width: 768px) 90vw, 440px"
+                      width={900}
+                      height={449}
+                      loading="lazy"
+                      decoding="async"
+                      alt={ui.yoloPreviewAlt}
+                      className="proto-featured-img"
+                    />
+                  </div>
                 </TerminalWindow>
               </div>
             </article>
@@ -889,53 +1005,6 @@ function ProjectsSection({ locale }: { locale: Locale }) {
               </div>
               {archive.map((project, index) => {
                 const isUni = index >= archive.length - 4;
-                if (project.title === "YOLO Complexity Lab") {
-                  // The one archive entry with a live app gets the full
-                  // featured-card structure — info left, screen right.
-                  return (
-                    <article key={project.title} className="proto-proj is-featured is-dim" data-rise>
-                      <div className="proto-featured-info">
-                        <div className="proto-proj-head">
-                          <span className="proto-proj-name">▸ {project.title}</span>
-                          {isUni ? <span className="proto-uni-badge">{ui.uniBadge}</span> : null}
-                          <span className="proto-proj-ctx">{project.context[locale]}</span>
-                        </div>
-                        <p className="proto-proj-desc">{project.description[locale]}</p>
-                        <span className="proto-proj-status">{project.status[locale]}</span>
-                        <div className="proto-proj-tags">
-                          {project.tags.map((tag) => (
-                            <span key={tag} className="proto-tag">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="proto-proj-links">
-                          {project.demoUrl ? (
-                            <a className="text-link" href={project.demoUrl} target="_blank" rel="noreferrer">
-                              {copy[locale].projects.liveDemo}
-                            </a>
-                          ) : null}
-                          {project.sourceUrl ? (
-                            <a className="text-link" href={project.sourceUrl} target="_blank" rel="noreferrer">
-                              {copy[locale].projects.sourceCode}
-                            </a>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="proto-featured-preview">
-                        <TerminalWindow title={ui.yoloPreviewTitle}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src="/previews/yololab.png"
-                            alt={ui.yoloPreviewAlt}
-                            className="proto-featured-img"
-                            loading="lazy"
-                          />
-                        </TerminalWindow>
-                      </div>
-                    </article>
-                  );
-                }
                 return <ProjectRow key={project.title} project={project} locale={locale} dim uni={isUni} />;
               })}
             </div>
@@ -1029,4 +1098,5 @@ export {
   TerminalSection,
   ContactSection,
   uiCopy,
+  STACK_TREE,
 };

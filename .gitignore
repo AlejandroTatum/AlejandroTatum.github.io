@@ -40,3 +40,6 @@ next-env.d.ts
 
 # impeccable design tooling (local)
 /.impeccable/
+
+# Playwright MCP session logs
+.playwright-mcp/
