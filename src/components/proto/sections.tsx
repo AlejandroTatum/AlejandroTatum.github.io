@@ -84,6 +84,7 @@ const uiCopy = {
     stackComment: "# visual mode",
     stackTitle: "stack — capability explorer",
     stackToggle: "ls",
+    stackCollapse: "cd ..",
     gentleName: "gentle-ai",
     gentleComment: "spec-driven dev workflow I use daily",
     projectsCmd: "ls ~/featured",
@@ -148,6 +149,7 @@ const uiCopy = {
     stackComment: "# modo visual",
     stackTitle: "stack — explorador de capacidades",
     stackToggle: "ls",
+    stackCollapse: "cd ..",
     gentleName: "gentle-ai",
     gentleComment: "flujo spec-driven que uso a diario",
     projectsCmd: "ls ~/destacados",
@@ -671,10 +673,12 @@ const STACK_TREE: Array<{ slug: string; subtitle: Record<Locale, string>; items:
 
 const GROUP_COLORS = ["#ff9ec7", "#7ce8d8", "#ffd6a5", "#c4b5fd", "#9fe8a8"];
 
-/** Below 768px only these lead groups render expanded by default — the rest
-    collapse behind a per-group `ls` toggle, mirroring the archive pattern. */
-const ALWAYS_EXPANDED_COUNT = 3;
-const COLLAPSIBLE_SLUGS = STACK_TREE.slice(ALWAYS_EXPANDED_COUNT).map((group) => group.slug);
+/** Every group can be folded behind a per-group `ls` / `cd ..` toggle,
+    mirroring the archive pattern. Below 768px only the first groups start
+    expanded; wider viewports start with everything open. */
+const MOBILE_EXPANDED_COUNT = 3;
+const ALL_SLUGS = STACK_TREE.map((group) => group.slug);
+const MOBILE_DEFAULT_SLUGS = ALL_SLUGS.slice(0, MOBILE_EXPANDED_COUNT);
 const MOBILE_QUERY = "(max-width: 767px)";
 
 function StackSection({ locale }: { locale: Locale }) {
@@ -683,12 +687,12 @@ function StackSection({ locale }: { locale: Locale }) {
   // Server and initial client render both expand everything — matches ≥768px
   // behavior exactly, so there is no hydration mismatch. The effect below
   // narrows it down once we know the real viewport.
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(COLLAPSIBLE_SLUGS));
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(ALL_SLUGS));
 
   useEffect(() => {
     const mql = window.matchMedia(MOBILE_QUERY);
     const applyDefault = (isMobile: boolean) => {
-      setExpandedGroups(new Set(isMobile ? [] : COLLAPSIBLE_SLUGS));
+      setExpandedGroups(new Set(isMobile ? MOBILE_DEFAULT_SLUGS : ALL_SLUGS));
     };
     applyDefault(mql.matches);
     const onChange = (event: MediaQueryListEvent) => applyDefault(event.matches);
@@ -720,8 +724,7 @@ function StackSection({ locale }: { locale: Locale }) {
           </div>
 
           {STACK_TREE.map((group, groupIndex) => {
-            const isCollapsible = groupIndex >= ALWAYS_EXPANDED_COUNT;
-            const isExpanded = !isCollapsible || expandedGroups.has(group.slug);
+            const isExpanded = expandedGroups.has(group.slug);
             return (
               <div
                 key={group.slug}
@@ -735,16 +738,15 @@ function StackSection({ locale }: { locale: Locale }) {
                   </span>
                   <span className="tree-dir">{group.slug}/</span>
                   <span className="tree-dir-comment"># {group.subtitle[locale]}</span>
-                  {isCollapsible ? (
-                    <button
-                      type="button"
-                      className="bracket-btn is-ghost proto-archive-btn proto-stack-toggle"
-                      onClick={() => toggleGroup(group.slug)}
-                      aria-expanded={isExpanded}
-                    >
-                      <span className="bracket">[</span> {ui.stackToggle} <span className="bracket">]</span>
-                    </button>
-                  ) : null}
+                  <button
+                    type="button"
+                    className="bracket-btn is-ghost proto-archive-btn proto-stack-toggle"
+                    onClick={() => toggleGroup(group.slug)}
+                    aria-expanded={isExpanded}
+                  >
+                    <span className="bracket">[</span> {isExpanded ? ui.stackCollapse : ui.stackToggle}{" "}
+                    <span className="bracket">]</span>
+                  </button>
                 </div>
                 {isExpanded ? (
                   <div className="proto-stack-tiles">
@@ -756,7 +758,7 @@ function StackSection({ locale }: { locale: Locale }) {
                       // `data-rise` entirely and stay visible immediately
                       // instead of depending on a reveal that will never fire.
                       return (
-                        <div key={item} className="stack-tile" {...(isCollapsible ? {} : { "data-rise": true })}>
+                        <div key={item} className="stack-tile">
                           <Icon className="stack-tile-icon" aria-hidden="true" />
                           <span>{item}</span>
                         </div>

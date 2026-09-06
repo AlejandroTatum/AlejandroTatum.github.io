@@ -55,6 +55,14 @@ export function ShortcutsOverlay({ open, onClose, locale }: ShortcutsOverlayProp
       >
         <TerminalWindow title={t.title}>
           <div className="tui-body">
+            <button
+              type="button"
+              className="bracket-btn is-ghost proto-cmdk-close proto-shortcuts-close"
+              onClick={onClose}
+              aria-label={t.title}
+            >
+              <span className="bracket">[</span> esc <span className="bracket">]</span>
+            </button>
             <div className="proto-shortcuts-group">
               <span className="proto-shortcuts-label">{t.nav}</span>
               <div className="proto-shortcuts-rows">

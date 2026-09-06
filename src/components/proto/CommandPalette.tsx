@@ -12,6 +12,7 @@ const paletteCopy = {
     title: "command palette",
     placeholder: "type a command or section…",
     footer: "↑↓ navigate · ⏎ run · esc close",
+    close: "close the command palette",
     groups: { section: "sections", shell: "shell", toggle: "toggles", link: "links" },
     empty: "no matching command",
   },
@@ -19,6 +20,7 @@ const paletteCopy = {
     title: "paleta de comandos",
     placeholder: "escribe un comando o sección…",
     footer: "↑↓ navegar · ⏎ ejecutar · esc cerrar",
+    close: "cerrar la paleta de comandos",
     groups: { section: "secciones", shell: "shell", toggle: "ajustes", link: "enlaces" },
     empty: "sin comandos coincidentes",
   },
@@ -173,7 +175,14 @@ export function CommandPalette() {
 
   return (
     <div className="proto-cmdk-backdrop" onMouseDown={onBackdropClick}>
-      <div ref={containerRef} role="dialog" aria-modal="true" aria-label={t.title} onKeyDown={onKeyDown}>
+      <div
+        ref={containerRef}
+        className="proto-cmdk-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t.title}
+        onKeyDown={onKeyDown}
+      >
         <TerminalWindow className="proto-cmdk" title={t.title}>
           <div className="proto-cmdk-input-row">
             <span className="cmd-prompt" aria-hidden="true">
@@ -192,6 +201,14 @@ export function CommandPalette() {
               autoComplete="off"
               spellCheck={false}
             />
+            <button
+              type="button"
+              className="bracket-btn is-ghost proto-cmdk-close"
+              onClick={closePalette}
+              aria-label={t.close}
+            >
+              <span className="bracket">[</span> esc <span className="bracket">]</span>
+            </button>
           </div>
 
           <div className="proto-cmdk-list">
