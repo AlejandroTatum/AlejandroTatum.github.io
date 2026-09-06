@@ -1,0 +1,1716 @@
+/* ============================================================
+   /proto — "dev mode" TUI skin (prototype, inspired by
+   gentlemanprogramming.com/dev). Scoped under .proto-root so it
+   never touches the incumbent pixel-art site.
+   ============================================================ */
+
+.proto-root {
+  --tbg: #131017;
+  --tpanel: #191420;
+  --tpanel-2: #201828;
+  --tbar: #16111d;
+  --tborder: #382e45;
+  --tborder-bright: #584872;
+  --ttext: #eae3f0;
+  --tdim: #a99dbb;
+  --tfaint: #8b7fa6;
+  --trose: #ff9ec7;
+  --trose-soft: #ffc4dc;
+  --tcyan: #7ce8d8;
+  --tgreen: #9fe8a8;
+  --tpeach: #ffd6a5;
+  --tpurple: #c4b5fd;
+  --tmono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tpixel: var(--font-press-start), var(--font-jetbrains), monospace;
+
+  position: relative;
+  min-height: 100dvh;
+  background: var(--tbg);
+  color: var(--ttext);
+  font-family: var(--tmono);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* A11y + language meta rows: these rows scroll away with content. */
+.proto-root ::selection {
+  background: var(--trose);
+  color: var(--tbg);
+}
+
+.proto-root :focus-visible {
+  outline: 2px solid var(--tcyan);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Thin dark scrollbar so the page chrome stays in-world. */
+.proto-scrollroot {
+  scrollbar-color: var(--tborder-bright) var(--tbg);
+  scrollbar-width: thin;
+}
+
+.proto-scrollroot::-webkit-scrollbar {
+  width: 10px;
+}
+
+.proto-scrollroot::-webkit-scrollbar-track {
+  background: var(--tbg);
+}
+
+.proto-scrollroot::-webkit-scrollbar-thumb {
+  background: var(--tborder-bright);
+  border: 2px solid var(--tbg);
+  border-radius: 6px;
+}
+
+/* CRT scanlines + vignette. Purely decorative, static (no flicker). */
+.proto-scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background:
+    radial-gradient(ellipse at center, transparent 58%, rgba(6, 4, 10, 0.42) 100%),
+    repeating-linear-gradient(0deg, rgba(4, 2, 8, 0.16) 0 1px, transparent 1px 3px);
+}
+
+@media (max-width: 640px) {
+  .proto-scanlines {
+    background:
+      radial-gradient(ellipse at center, transparent 62%, rgba(6, 4, 10, 0.3) 100%),
+      repeating-linear-gradient(0deg, rgba(4, 2, 8, 0.1) 0 1px, transparent 1px 3px);
+  }
+}
+
+/* ---------------- fixed chrome: terminal-window title bar ---------------- */
+
+.proto-topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 80;
+  display: flex;
+  align-items: stretch;
+  gap: 0.9rem;
+  height: 3.1rem;
+  border-bottom: 1px solid var(--tborder);
+  background: rgba(19, 16, 23, 0.92);
+  backdrop-filter: blur(6px);
+  padding: 0 1rem;
+}
+
+.proto-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.05rem;
+  flex: none;
+  color: var(--trose);
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.proto-brand .proto-brand-path {
+  color: var(--tcyan);
+}
+
+.proto-brand-cursor {
+  width: 0.45em;
+  height: 1em;
+  margin-left: 0.4em;
+}
+
+/* Attached terminal tabs: the active one merges into the bar. */
+.proto-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+  max-width: 60%;
+}
+
+.proto-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.proto-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  flex: none;
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 9px 9px 0 0;
+  padding: 0.42rem 0.8rem 0.62rem;
+  color: var(--tdim);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.proto-tab-index {
+  color: var(--tfaint);
+  font-size: 0.68rem;
+  transition: color 140ms ease;
+}
+
+.proto-tab-icon {
+  font-size: 0.82rem;
+  flex: none;
+}
+
+.proto-tab:hover {
+  color: var(--ttext);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.proto-tab.is-active {
+  background: var(--tpanel);
+  border-color: var(--tborder);
+  box-shadow:
+    inset 0 2px 0 var(--tab-accent),
+    0 -4px 22px color-mix(in srgb, var(--tab-accent) 16%, transparent);
+  color: var(--ttext);
+}
+
+.proto-tab.is-active .proto-tab-index,
+.proto-tab.is-active .proto-tab-icon {
+  color: var(--tab-accent);
+}
+
+.proto-tab.is-active .proto-tab-label {
+  text-shadow: 0 0 14px color-mix(in srgb, var(--tab-accent) 55%, transparent);
+}
+
+.proto-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex: none;
+}
+
+.proto-chip-btn {
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--tdim);
+  font-family: var(--tmono);
+  font-size: 0.72rem;
+  padding: 0.24rem 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.proto-chip-btn:hover {
+  color: var(--ttext);
+  border-color: var(--tborder-bright);
+}
+
+.proto-lang-active {
+  color: var(--trose);
+  font-weight: 700;
+}
+
+.proto-lang-sep {
+  color: var(--tfaint);
+  margin: 0 0.15rem;
+}
+
+/* Window controls — every one does something real. */
+.proto-winctl {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--tborder);
+}
+
+.proto-winctl button,
+.proto-winctl .proto-winctl-close {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid var(--tborder);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--tdim);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.proto-winctl button:hover,
+.proto-winctl .proto-winctl-close:hover {
+  color: var(--ttext);
+  border-color: var(--tborder-bright);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.proto-winctl button.is-on {
+  color: var(--tcyan);
+  border-color: color-mix(in srgb, var(--tcyan) 45%, var(--tborder));
+}
+
+.proto-winctl .proto-winctl-close:hover {
+  background: var(--trose);
+  border-color: var(--trose);
+  color: var(--tbg);
+}
+
+.proto-statusbar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid var(--tborder);
+  background: var(--tbar);
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  color: var(--tdim);
+}
+
+.proto-cwd {
+  color: var(--tcyan);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proto-branch {
+  color: var(--trose);
+  white-space: nowrap;
+}
+
+.proto-status-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  white-space: nowrap;
+}
+
+.proto-progress {
+  color: var(--tfaint);
+  font-variant-numeric: tabular-nums;
+}
+
+.proto-progress .proto-progress-bar {
+  color: var(--trose);
+}
+
+.proto-scroll-hint {
+  color: var(--tfaint);
+}
+
+.proto-scanlines.is-off {
+  display: none;
+}
+
+/* ---------------- main column ---------------- */
+
+.proto-main {
+  margin: 0 auto;
+  max-width: 66rem;
+  padding: 6.5rem 1.25rem 7rem;
+  display: grid;
+  gap: 6.5rem;
+}
+
+/* Grid blowout guard: pre-formatted tree lines and long tokens must not
+   inflate the track's min-content past the viewport. */
+.proto-main > *,
+.proto-hero-grid > *,
+.proto-contact-grid > * {
+  min-width: 0;
+}
+
+.proto-section {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (max-width: 640px) {
+  .proto-main {
+    gap: 4.75rem;
+    padding-top: 5.5rem;
+  }
+}
+
+/* ---------------- command line ---------------- */
+
+.cmd-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-size: clamp(0.85rem, 1.6vw, 0.98rem);
+  margin-bottom: 1.1rem;
+}
+
+.cmd-prompt {
+  color: var(--trose);
+  font-weight: 700;
+  flex: none;
+}
+
+.cmd-path {
+  color: var(--tfaint);
+}
+
+.cmd-text {
+  color: var(--tcyan);
+  min-height: 1.3em;
+  word-break: break-word;
+}
+
+.cmd-comment {
+  color: var(--tfaint);
+  font-size: 0.8em;
+}
+
+.cursor-block {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 0.15em;
+  vertical-align: text-bottom;
+  background: var(--trose);
+  animation: proto-blink 1.05s steps(2, jump-none) infinite;
+}
+
+@keyframes proto-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------------- TUI window ---------------- */
+
+.tui-window {
+  border: 1px solid var(--tborder);
+  border-radius: 10px;
+  background: var(--tpanel);
+  box-shadow: 0 18px 44px rgba(4, 2, 8, 0.5);
+  overflow: hidden;
+}
+
+.tui-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--tborder);
+  background: var(--tpanel-2);
+  padding: 0.5rem 0.85rem;
+}
+
+.tui-dots {
+  display: flex;
+  gap: 0.35rem;
+  flex: none;
+}
+
+.tui-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--trose);
+}
+
+.tui-dots span:nth-child(2) {
+  background: var(--tcyan);
+}
+
+.tui-dots span:nth-child(3) {
+  background: var(--tpurple);
+}
+
+.tui-title {
+  color: var(--tfaint);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.proto-titlebar-flag {
+  width: 20px;
+  height: 13px;
+}
+
+.tui-body {
+  padding: 1.15rem 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .tui-body {
+    padding: 0.95rem;
+  }
+}
+
+/* ---------------- hero ---------------- */
+
+.proto-hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .proto-hero-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.proto-hero-name {
+  font-family: var(--tpixel);
+  font-weight: 400;
+  font-size: clamp(1.35rem, 4.4vw, 2.6rem);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--ttext);
+  margin: 0.35rem 0 0;
+}
+
+.proto-hero-name .accent {
+  color: var(--trose);
+}
+
+.proto-hero-role {
+  margin-top: 1.1rem;
+  color: var(--tcyan);
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 600;
+}
+
+.proto-hero-desc {
+  margin-top: 1rem;
+  max-width: 34rem;
+  color: var(--tdim);
+}
+
+/* neofetch-style quick facts */
+.proto-sysinfo {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+  font-size: 0.85rem;
+}
+
+.sysinfo-row {
+  display: grid;
+  grid-template-columns: 6.2rem 1fr;
+  gap: 0.9rem;
+  align-items: baseline;
+}
+
+.sysinfo-key {
+  color: var(--trose);
+  font-weight: 600;
+}
+
+.sysinfo-key::before {
+  content: "▪ ";
+  color: var(--tfaint);
+}
+
+.sysinfo-val {
+  color: var(--tdim);
+}
+
+.sysinfo-loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.proto-flag {
+  display: inline-block;
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  outline: 1px solid var(--tborder-bright);
+  outline-offset: 0;
+  flex: none;
+}
+
+.proto-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.8rem;
+}
+
+.bracket-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--tborder-bright);
+  border-radius: 6px;
+  background: var(--tpanel-2);
+  color: var(--tcyan);
+  font-family: var(--tmono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.6rem 0.95rem;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.bracket-btn .bracket {
+  color: var(--tfaint);
+  transition: color 140ms ease;
+}
+
+.bracket-btn:hover {
+  background: var(--trose);
+  border-color: var(--trose);
+  color: var(--tbg);
+  transform: translateY(-1px);
+}
+
+.bracket-btn:hover .bracket {
+  color: var(--tbg);
+}
+
+.bracket-btn.is-ghost {
+  color: var(--trose-soft);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--tborder-bright);
+  border-radius: 6px;
+  background: var(--tpanel-2);
+  color: var(--tdim);
+  font-size: 1.05rem;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.icon-btn:hover {
+  color: var(--trose);
+  border-color: var(--trose);
+  background: rgba(255, 158, 199, 0.08);
+}
+
+/* portrait window */
+
+.proto-portrait-frame {
+  position: relative;
+  border-bottom: 1px solid var(--tborder);
+  background: #0d0a11;
+  overflow: hidden;
+}
+
+.proto-portrait-img {
+  display: block;
+  width: 100%;
+  height: clamp(15rem, 34vw, 21rem);
+  object-fit: cover;
+  object-position: center 30%;
+  image-rendering: pixelated;
+  background: #0d0a11;
+}
+
+/* Viewfinder corners: the pixel viewer is "live". */
+.proto-scan-corners span {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--tcyan);
+  opacity: 0.85;
+}
+
+.proto-scan-corners span:nth-child(1) {
+  top: 8px;
+  left: 8px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.proto-scan-corners span:nth-child(2) {
+  top: 8px;
+  right: 8px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.proto-scan-corners span:nth-child(3) {
+  bottom: 8px;
+  left: 8px;
+  border-right: none;
+  border-top: none;
+}
+
+.proto-scan-corners span:nth-child(4) {
+  bottom: 8px;
+  right: 8px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Slow CRT sweep across the portrait. */
+.proto-portrait-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 34%;
+  background: linear-gradient(180deg, transparent, rgba(124, 232, 216, 0.06) 55%, rgba(124, 232, 216, 0.14));
+  animation: proto-sweep 5.6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes proto-sweep {
+  0% {
+    transform: translateY(-110%);
+  }
+
+  100% {
+    transform: translateY(320%);
+  }
+}
+
+/* ---------------- about ---------------- */
+
+.proto-prose {
+  display: grid;
+  gap: 1rem;
+  color: var(--tdim);
+  max-width: 46rem;
+}
+
+.proto-prose strong {
+  color: var(--ttext);
+}
+
+.proto-log {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.proto-log-line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.8rem;
+  align-items: baseline;
+  border: 1px solid var(--tborder);
+  border-radius: 8px;
+  background: var(--tpanel-2);
+  padding: 0.7rem 0.9rem;
+}
+
+.proto-log-badge {
+  color: var(--tgreen);
+  font-weight: 700;
+  flex: none;
+}
+
+.proto-log-title {
+  color: var(--ttext);
+  font-weight: 600;
+}
+
+.proto-log-detail {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--tfaint);
+  font-size: 0.85rem;
+}
+
+/* ---------------- stack tree ---------------- */
+
+.proto-tree {
+  font-size: clamp(0.82rem, 1.7vw, 0.92rem);
+  line-height: 1.75;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.tree-line {
+  white-space: pre;
+}
+
+.tree-branch {
+  color: var(--tborder-bright);
+}
+
+.tree-dir {
+  color: var(--trose);
+  font-weight: 700;
+}
+
+.tree-dir-comment {
+  color: var(--tfaint);
+  font-size: 0.85em;
+  margin-left: 0.6rem;
+}
+
+.tree-file {
+  color: var(--ttext);
+}
+
+.tree-file:hover {
+  color: var(--tcyan);
+}
+
+/* ---------------- about: git-log trajectory ---------------- */
+
+/* bright scanline that flashes while the panel powers on */
+.proto-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    transparent 46%,
+    rgba(124, 232, 216, 0.35) 50%,
+    transparent 54%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.proto-about-lede {
+  color: var(--ttext);
+  font-size: 0.95rem;
+  font-weight: 600;
+  max-width: 42rem;
+  border-left: 2px solid var(--trose);
+  padding-left: 0.8rem;
+}
+
+.proto-glog {
+  display: grid;
+  margin-top: 1.5rem;
+}
+
+.glog-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.glog-rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 30px;
+  align-self: stretch;
+}
+
+.glog-node {
+  width: 28px;
+  height: 28px;
+  margin-top: 0.2rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--node) 55%, var(--tborder));
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--node) 10%, var(--tpanel-2));
+  color: var(--node);
+  font-size: 0.82rem;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--node) 25%, transparent);
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.glog-row:hover .glog-node {
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--node) 45%, transparent);
+}
+
+.glog-line {
+  position: absolute;
+  top: 2rem;
+  bottom: -0.4rem;
+  width: 2px;
+  background: linear-gradient(180deg, var(--tborder-bright), var(--tborder));
+}
+
+.glog-title {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--ttext);
+  font-weight: 700;
+}
+
+.glog-detail {
+  display: block;
+  margin-top: 0.15rem;
+  padding-bottom: 1.1rem;
+  color: var(--tfaint);
+  font-size: 0.84rem;
+}
+
+.glog-row:last-child .glog-detail {
+  padding-bottom: 0;
+}
+
+.proto-about-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed var(--tborder);
+}
+
+/* closing wc -l line: real counts, terminal voice */
+.proto-about-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.9rem;
+  margin-top: 1.3rem;
+  font-size: 0.82rem;
+}
+
+.proto-about-stats-cmd::before {
+  content: "$ ";
+  color: var(--trose);
+  font-weight: 700;
+}
+
+.proto-about-stats-cmd {
+  color: var(--tcyan);
+}
+
+.proto-about-stats-out {
+  color: var(--tfaint);
+}
+
+/* ---------------- stack: gentle-ai callout ---------------- */
+
+.proto-stack-featured {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--trose) 45%, var(--tborder));
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 158, 199, 0.1), rgba(255, 158, 199, 0.02) 55%, transparent),
+    var(--tpanel-2);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.6rem;
+  overflow: hidden;
+}
+
+.proto-stack-featured-icon {
+  flex: none;
+  color: var(--trose);
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 8px rgba(255, 158, 199, 0.5));
+}
+
+.proto-stack-featured-name {
+  display: block;
+  color: var(--trose);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.proto-stack-featured-pulse {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--trose), transparent);
+  animation: proto-pulse-slide 3.2s ease-in-out infinite;
+}
+
+@keyframes proto-pulse-slide {
+  0%,
+  100% {
+    transform: translateX(-40%);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateX(40%);
+    opacity: 1;
+  }
+}
+
+/* ---------------- stack: visual tiles ---------------- */
+
+.proto-stack-group {
+  margin-bottom: 1.5rem;
+}
+
+.proto-stack-group:last-child {
+  margin-bottom: 0;
+}
+
+.proto-stack-dir {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.7rem;
+  white-space: pre;
+}
+
+.proto-stack-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.6rem;
+  margin-left: 1.7rem;
+}
+
+.stack-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--tborder);
+  border-radius: 6px;
+  background: var(--tpanel-2);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.8rem;
+  color: var(--ttext);
+  transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
+}
+
+.stack-tile:hover {
+  border-color: color-mix(in srgb, var(--grp) 60%, var(--tborder));
+  background: color-mix(in srgb, var(--grp) 7%, var(--tpanel-2));
+  transform: translateY(-1px);
+}
+
+.stack-tile-icon {
+  flex: none;
+  font-size: 1.05rem;
+  color: var(--grp);
+}
+
+/* ---------------- projects ---------------- */
+
+.proto-proj-dir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+  row-gap: 0.15rem;
+  margin: 1.6rem 0 0.9rem;
+  color: var(--trose);
+  font-weight: 700;
+}
+
+.proto-proj-dir:first-child {
+  margin-top: 0;
+}
+
+.proto-proj-dir .perm {
+  color: var(--tfaint);
+  font-weight: 400;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.proto-proj-dir .count {
+  color: var(--tfaint);
+  font-weight: 400;
+  font-size: 0.78rem;
+}
+
+.proto-proj {
+  border: 1px solid var(--tborder);
+  border-radius: 8px;
+  background: var(--tpanel-2);
+  padding: 0.95rem 1.05rem;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.proto-proj + .proto-proj {
+  margin-top: 0.8rem;
+}
+
+.proto-proj:hover {
+  border-color: var(--tborder-bright);
+  transform: translateX(3px);
+}
+
+.proto-proj-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.7rem;
+}
+
+.proto-proj-name {
+  color: var(--tcyan);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.proto-proj-ctx {
+  color: var(--tfaint);
+  font-size: 0.75rem;
+}
+
+.proto-proj-desc {
+  margin-top: 0.5rem;
+  color: var(--tdim);
+  font-size: 0.92rem;
+  max-width: 52rem;
+}
+
+.proto-proj-status {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--tpeach);
+  font-size: 0.78rem;
+}
+
+.proto-proj-status::before {
+  content: "# ";
+  color: var(--tfaint);
+}
+
+.proto-proj-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.proto-tag {
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  color: var(--tdim);
+  font-size: 0.74rem;
+}
+
+.proto-proj-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.text-link {
+  color: var(--trose);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255, 158, 199, 0.45);
+  padding-bottom: 1px;
+}
+
+.text-link:hover {
+  color: var(--trose-soft);
+  border-bottom-color: var(--trose-soft);
+}
+
+/* draft badge for entries still being curated */
+.proto-draft-badge {
+  flex: none;
+  border: 1px solid var(--tpeach);
+  border-radius: 4px;
+  color: var(--tpeach);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.08rem 0.4rem;
+}
+
+/* university-work badge on archive entries */
+.proto-uni-badge {
+  flex: none;
+  border: 1px solid var(--tpurple);
+  border-radius: 4px;
+  color: var(--tpurple);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.08rem 0.4rem;
+}
+
+.proto-tag.is-open {
+  color: var(--tgreen);
+  border-color: color-mix(in srgb, var(--tgreen) 55%, var(--tborder));
+}
+
+/* hidden .archive: dimmed entries behind the ls -a toggle */
+.proto-archive-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  margin-top: 1.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed var(--tborder);
+}
+
+.proto-archive-btn {
+  font-size: 0.8rem;
+  padding: 0.45rem 0.75rem;
+}
+
+.proto-archive-hint {
+  color: var(--tfaint);
+  font-size: 0.8rem;
+}
+
+.proto-archive {
+  margin-top: 1rem;
+  animation: proto-rise-in 0.45s steps(6) both;
+}
+
+@keyframes proto-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.proto-archive-dir {
+  margin-top: 0;
+  color: var(--tfaint);
+}
+
+.proto-proj.is-dim {
+  background: transparent;
+  border-style: dashed;
+}
+
+.proto-proj.is-dim .proto-proj-name {
+  color: var(--tdim);
+}
+
+.proto-proj.is-dim .proto-proj-desc,
+.proto-proj.is-dim .proto-tag {
+  color: var(--tfaint);
+}
+
+.proto-proj.is-dim:hover {
+  transform: none;
+}
+
+/* dim featured card (YOLO in .archive): same two-column structure as the
+   top 3, with the dashed/archive treatment */
+.proto-proj.is-featured.is-dim .proto-featured-img {
+  opacity: 0.85;
+}
+
+.proto-proj.is-featured.is-dim:hover .proto-featured-img {
+  opacity: 1;
+}
+
+.proto-proj.is-featured.is-dim .tui-window {
+  border-style: dashed;
+}
+
+/* featured cards: info + preview side by side */
+.proto-top3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px dashed var(--tborder);
+}
+
+.proto-top3-label {
+  font-family: var(--tpixel);
+  font-size: clamp(1rem, 2.6vw, 1.45rem);
+  color: var(--trose);
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 18px rgba(255, 158, 199, 0.35);
+  white-space: nowrap;
+}
+
+.proto-top3-line {
+  flex: 1;
+  min-width: 3rem;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--tborder-bright) 0 6px, transparent 6px 12px);
+}
+
+.proto-top3-sub {
+  flex-basis: 100%;
+  color: var(--tfaint);
+  font-size: 0.82rem;
+}
+
+.proto-rank {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--rank) 55%, var(--tborder));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--rank) 8%, var(--tpanel-2));
+  color: var(--rank);
+  font-family: var(--tpixel);
+  font-size: 0.78rem;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--rank) 50%, transparent);
+}
+
+.proto-proj.is-featured .proto-proj-head {
+  align-items: center;
+}
+
+.proto-site-btn {
+  margin-top: 1.1rem;
+  width: 100%;
+  justify-content: center;
+  font-size: 0.82rem;
+}
+
+.proto-proj.is-featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.proto-featured-info {
+  min-width: 0;
+}
+
+.proto-featured-preview {
+  min-width: 0;
+  border-radius: 8px;
+}
+
+.proto-featured-preview .tui-window {
+  box-shadow: none;
+}
+
+.proto-featured-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  background: #0d0a11;
+}
+
+@media (max-width: 880px) {
+  .proto-proj.is-featured {
+    grid-template-columns: 1fr;
+  }
+
+  .proto-featured-preview {
+    order: -1;
+  }
+}
+
+.proto-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.2rem;
+  border-radius: 2px;
+  background: var(--tgreen);
+  animation: proto-blink 1.4s steps(2, jump-none) infinite;
+}
+
+/* animated document-build demo */
+.doc-preview {
+  background: #0d0a11;
+  color: var(--tdim);
+  font-size: 0.72rem;
+  line-height: 1.9;
+  padding: 0.8rem 0.9rem;
+  min-height: 11.2rem;
+}
+
+.doc-line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.doc-line.is-cmd {
+  color: var(--tcyan);
+}
+
+.doc-line.is-cmd::first-letter {
+  color: var(--trose);
+}
+
+.doc-line.is-ok {
+  color: var(--tgreen);
+}
+
+.doc-bar {
+  color: var(--tpeach);
+  white-space: pre;
+}
+
+/* ---------------- contact ---------------- */
+
+.proto-contact-grid {
+  display: grid;
+  gap: 1.4rem;
+}
+
+@media (min-width: 900px) {
+  .proto-contact-grid {
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: start;
+  }
+}
+
+.proto-contact-desc {
+  color: var(--tdim);
+  max-width: 34rem;
+}
+
+.proto-contact-rows {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.proto-contact-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  border: 1px solid var(--tborder);
+  border-radius: 8px;
+  background: var(--tpanel-2);
+  padding: 0.65rem 0.9rem;
+  color: var(--tdim);
+  font-size: 0.88rem;
+  transition: border-color 140ms ease;
+}
+
+.proto-contact-row:hover {
+  border-color: var(--tborder-bright);
+}
+
+.proto-contact-row .cmd-name {
+  color: var(--trose);
+  font-weight: 700;
+  flex: none;
+}
+
+.proto-contact-row .cmd-value {
+  color: var(--tcyan);
+  overflow-wrap: anywhere;
+}
+
+/* interactive prompt */
+
+.proto-term-out {
+  display: grid;
+  gap: 0.3rem;
+  min-height: 3.2rem;
+  font-size: 0.86rem;
+}
+
+.term-line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.term-line.is-in {
+  color: var(--ttext);
+}
+
+.term-line.is-in .cmd-prompt {
+  margin-right: 0.5rem;
+}
+
+.term-line.is-out {
+  color: var(--tdim);
+}
+
+.term-line.is-ok {
+  color: var(--tgreen);
+}
+
+.term-line.is-err {
+  color: var(--tpeach);
+}
+
+.proto-term-input-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  border-top: 1px dashed var(--tborder);
+  padding-top: 0.9rem;
+}
+
+.proto-term-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--tcyan);
+  caret-color: var(--trose);
+  font-family: var(--tmono);
+  font-size: 0.9rem;
+}
+
+.proto-term-input:focus {
+  outline: none;
+}
+
+.proto-term-input::placeholder {
+  color: var(--tfaint);
+}
+
+.proto-run-btn {
+  flex: none;
+  border: 1px solid var(--tborder-bright);
+  border-radius: 4px;
+  background: var(--tpanel-2);
+  color: var(--tcyan);
+  font-family: var(--tmono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.28rem 0.6rem;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.proto-run-btn:hover {
+  background: var(--trose);
+  border-color: var(--trose);
+  color: var(--tbg);
+}
+
+/* Small screens: the long host label starves the input — swap for a bare $. */
+@media (max-width: 560px) {
+  .proto-term-host {
+    display: none;
+  }
+
+  .proto-term-input-row::before {
+    content: "$";
+    color: var(--trose);
+    font-weight: 700;
+  }
+}
+
+/* ---------------- footer ---------------- */
+
+.proto-footer {
+  border-top: 1px dashed var(--tborder);
+  padding-top: 1.6rem;
+  color: var(--tfaint);
+  font-size: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  align-items: baseline;
+}
+
+/* ---------------- boot overlay ---------------- */
+
+.proto-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--tbg);
+  padding: 1.5rem;
+}
+
+/* Failsafe: if JS never animates it away, vanish anyway. */
+.proto-boot.proto-boot-pending {
+  animation: proto-boot-vanish 0.5s ease 7s forwards;
+}
+
+@keyframes proto-boot-vanish {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.proto-boot-inner {
+  width: min(36rem, 100%);
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  display: grid;
+  gap: 0.4rem;
+}
+
+.boot-line {
+  display: flex;
+  gap: 0.7rem;
+  align-items: baseline;
+  color: var(--tdim);
+  min-height: 1.4em;
+}
+
+.boot-line .boot-cmd {
+  color: var(--tcyan);
+}
+
+.boot-line .boot-ok {
+  color: var(--tgreen);
+  font-weight: 700;
+  flex: none;
+}
+
+.boot-line .boot-info {
+  color: var(--tpurple);
+  flex: none;
+}
+
+.proto-boot-title {
+  color: var(--trose);
+  font-family: var(--tpixel);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 1.2rem;
+  min-height: 1.2em;
+}
+
+.proto-boot-skip {
+  margin-top: 1.6rem;
+  color: var(--tfaint);
+  font-size: 0.75rem;
+}
+
+/* ---------------- reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-block {
+    animation: none;
+  }
+
+  .proto-boot {
+    display: none;
+  }
+
+  .bracket-btn:hover,
+  .proto-proj:hover,
+  .stack-tile:hover {
+    transform: none;
+  }
+
+  .proto-portrait-frame::after,
+  .proto-stack-featured-pulse {
+    animation: none;
+  }
+
+  .proto-portrait-frame::after {
+    display: none;
+  }
+
+  .proto-stack-featured-pulse {
+    opacity: 0.6;
+    transform: none;
+  }
+
+  .proto-archive {
+    animation: none;
+  }
+}
+
+/* ---------------- small screens ---------------- */
+
+@media (max-width: 720px) {
+  .proto-topbar {
+    gap: 0.55rem;
+    height: 2.75rem;
+    padding: 0 0.7rem;
+  }
+
+  .proto-brand {
+    display: none;
+  }
+
+  .proto-tabs {
+    max-width: none;
+    /* Scrollable on mobile: fade the right edge so clipping reads as intent. */
+    mask-image: linear-gradient(90deg, #000 calc(100% - 20px), transparent);
+    padding-right: 10px;
+  }
+
+  .proto-tab {
+    padding: 0.38rem 0.6rem 0.5rem;
+    gap: 0.32rem;
+  }
+
+  .proto-tab-label {
+    font-size: 0.72rem;
+  }
+
+  .proto-branch {
+    display: none;
+  }
+
+  .proto-scroll-hint {
+    display: none;
+  }
+
+  .proto-statusbar {
+    padding: 0.4rem 0.7rem;
+  }
+
+  .proto-winctl {
+    padding-left: 0.35rem;
+  }
+
+  .proto-winctl button,
+  .proto-winctl .proto-winctl-close {
+    width: 1.55rem;
+    height: 1.55rem;
+  }
+
+  .proto-stack-tiles {
+    margin-left: 0.9rem;
+    grid-template-columns: repeat(auto-fill, minmax(8.6rem, 1fr));
+  }
+
+  /* Let the group subtitle wrap under the dir name instead of clipping. */
+  .proto-stack-dir {
+    flex-wrap: wrap;
+    white-space: normal;
+    row-gap: 0.05rem;
+  }
+
+  .proto-stack-dir .tree-branch,
+  .proto-stack-dir .tree-dir {
+    white-space: pre;
+  }
+
+  .proto-proj-dir .perm {
+    display: none;
+  }
+
+  .sysinfo-row {
+    grid-template-columns: 6.4rem 1fr;
+    gap: 0.55rem;
+  }
+}

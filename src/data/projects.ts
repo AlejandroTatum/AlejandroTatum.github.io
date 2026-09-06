@@ -21,7 +21,7 @@ export const projects: Project[] = [
     title: "YOLO Complexity Lab",
     category: "production",
     image: "/pixel/project-yolo-pixel.png",
-    demoUrl: "https://yolo-complexity-lab-unl.streamlit.app/",
+    demoUrl: "https://yololab.streamlit.app/",
     sourceUrl: "https://github.com/AlejandroTatum/yolo-complexity-lab",
     description: {
       en: "End-to-end computer vision lab for exploring YOLO model complexity, inference behavior and practical deployment tradeoffs through an interactive web interface.",
