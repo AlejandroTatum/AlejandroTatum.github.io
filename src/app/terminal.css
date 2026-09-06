@@ -1387,7 +1387,7 @@
 
 .proto-contact-desc {
   color: var(--tdim);
-  max-width: 34rem;
+  max-width: none;
 }
 
 .proto-contact-rows {
