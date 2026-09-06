@@ -8,6 +8,7 @@ export const copy = {
       projects: "Projects",
       contact: "Contact",
       hire: "Work with me",
+      devMode: "dev mode",
       switchLabel: "Cambiar a español",
     },
     hero: {
@@ -89,6 +90,7 @@ export const copy = {
       projects: "Proyectos",
       contact: "Contacto",
       hire: "Trabajemos juntos",
+      devMode: "modo dev",
       switchLabel: "Switch to English",
     },
     hero: {

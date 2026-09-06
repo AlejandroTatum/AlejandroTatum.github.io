@@ -27,13 +27,13 @@ const protoCopy = {
     tabHint: "sections",
     crt: "toggle CRT scanlines",
     fullscreen: "toggle fullscreen",
-    close: "close dev mode — return to pixel site",
+    close: "close dev mode — switch to the pixel site",
   },
   es: {
     tabHint: "secciones",
     crt: "alternar líneas CRT",
     fullscreen: "alternar pantalla completa",
-    close: "cerrar modo dev — volver al sitio píxel",
+    close: "cerrar modo dev — cambiar al sitio píxel",
   },
 } as const;
 
@@ -161,7 +161,7 @@ export function Chrome({ locale, active, crtOn, onToggleLocale, onToggleCrt, onA
             <button type="button" onClick={toggleFullscreen} title={t.fullscreen} aria-label={t.fullscreen}>
               <FiMaximize aria-hidden="true" />
             </button>
-            <Link className="proto-winctl-close" href="/" title={t.close} aria-label={t.close}>
+            <Link className="proto-winctl-close" href="/pixel" title={t.close} aria-label={t.close}>
               <FiX aria-hidden="true" />
             </Link>
           </div>

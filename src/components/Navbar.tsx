@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { siteConfig } from "@/lib/constants";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { copy, type Locale } from "@/lib/i18n";
@@ -50,6 +51,14 @@ export function Navbar({ locale, onToggleLocale }: NavbarProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="language-toggle"
+            title={t.devMode}
+            aria-label={t.devMode}
+          >
+            <span className="active">{`>_`}</span>
+          </Link>
           <button
             type="button"
             aria-label={t.switchLabel}
