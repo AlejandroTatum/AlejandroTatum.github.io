@@ -8,6 +8,37 @@ type SmoothScrollProviderProps = {
   children: ReactNode;
 };
 
+// The active Lenis instance, tracked as a module singleton so anything
+// outside this component (the hotkeys hook, the command palette, the
+// section context) can trigger the exact same scroll path as a tab click.
+let activeLenis: Lenis | null = null;
+
+/**
+ * Scrolls to a section by id (or "#id"), through the active Lenis instance
+ * when one is running — the same code path anchor clicks use — and falls
+ * back to a native scroll when Lenis is off (reduced motion, not mounted).
+ */
+export function scrollToSection(id: string): void {
+  if (typeof document === "undefined") return;
+  const hash = id.startsWith("#") ? id : `#${id}`;
+  const target = document.querySelector(hash);
+  if (!target) return;
+  if (activeLenis) {
+    activeLenis.scrollTo(target as HTMLElement, { offset: -16 });
+  } else {
+    target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  }
+  window.history.replaceState(null, "", hash);
+}
+
+/** Pauses/resumes Lenis — used to lock body scroll while the command
+    palette is open. A no-op when Lenis isn't running (reduced motion). */
+export function setScrollLocked(locked: boolean): void {
+  if (!activeLenis) return;
+  if (locked) activeLenis.stop();
+  else activeLenis.start();
+}
+
 /**
  * Site-wide Lenis smooth scroll, driven by the GSAP ticker and kept in sync
  * with ScrollTrigger. Skipped entirely when `prefers-reduced-motion: reduce`
@@ -21,6 +52,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       duration: 1.1,
       smoothWheel: true,
     });
+    activeLenis = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -38,11 +70,8 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       if (!anchor) return;
       const hash = anchor.getAttribute("href");
       if (!hash || hash === "#") return;
-      const target = document.querySelector(hash);
-      if (!target) return;
       event.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -16 });
-      window.history.replaceState(null, "", hash);
+      scrollToSection(hash);
     };
     document.addEventListener("click", onClick);
 
@@ -50,6 +79,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(tick);
       lenis.destroy();
+      activeLenis = null;
     };
   }, []);
 

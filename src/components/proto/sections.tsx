@@ -49,7 +49,10 @@ import { projects, type Project } from "@/data/projects";
 import { siteConfig } from "@/lib/constants";
 import { bindTerminalReveals, typeInto } from "@/components/proto/terminal";
 import { TerminalWindow } from "@/components/proto/TerminalWindow";
-import { ContactPrompt, TERMINAL_COMMANDS } from "@/components/proto/ContactPrompt";
+import { ContactPrompt } from "@/components/proto/ContactPrompt";
+import { COMMANDS, isShellHelpCommand } from "@/components/proto/commands";
+import { GithubSignal } from "@/components/proto/GithubSignal";
+import { useProtoContext } from "@/components/proto/ProtoContext";
 
 /* ------------------------------------------------------------------ */
 /* shared bits                                                         */
@@ -550,6 +553,7 @@ function AboutSection({ locale }: { locale: Locale }) {
               <span className="proto-about-stats-out">{statsLine}</span>
               <span className="cursor-block" aria-hidden="true" />
             </div>
+            <GithubSignal locale={locale} />
           </div>
         </TerminalWindow>
       </div>
@@ -746,8 +750,13 @@ function StackSection({ locale }: { locale: Locale }) {
                   <div className="proto-stack-tiles">
                     {group.items.map((item) => {
                       const Icon = STACK_ICONS[item] ?? FiTerminal;
+                      // Collapsible groups render their tiles fresh every time a
+                      // visitor toggles them open — they never pass through the
+                      // section's one-time scroll reveal, so they skip
+                      // `data-rise` entirely and stay visible immediately
+                      // instead of depending on a reveal that will never fire.
                       return (
-                        <div key={item} className="stack-tile" data-rise>
+                        <div key={item} className="stack-tile" {...(isCollapsible ? {} : { "data-rise": true })}>
                           <Icon className="stack-tile-icon" aria-hidden="true" />
                           <span>{item}</span>
                         </div>
@@ -830,7 +839,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
           </div>
 
           {/* 1 · cataclub — draft with staging preview */}
-          <article className="proto-proj is-featured" data-rise>
+          <article id="project-cataclub" className="proto-proj is-featured" data-rise>
             <div className="proto-featured-info">
               <div className="proto-proj-head">
                 <span className="proto-rank" style={{ "--rank": "#ff9ec7" } as CSSProperties}>
@@ -872,7 +881,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 
           {/* 2 · el horno del pingüino — live on its own domain, direct site button */}
           {horno ? (
-            <article className="proto-proj is-featured" data-rise>
+            <article id="project-elhornodelpinguino" className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
                 <div className="proto-proj-head">
                   <span className="proto-rank" style={{ "--rank": "#7ce8d8" } as CSSProperties}>
@@ -924,7 +933,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 
           {/* 3 · yolo complexity lab — public source, live streamlit demo */}
           {yolo ? (
-            <article className="proto-proj is-featured" data-rise>
+            <article id="project-yololab" className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
                 <div className="proto-proj-head">
                   <span className="proto-rank" style={{ "--rank": "#ffd6a5" } as CSSProperties}>
@@ -1019,9 +1028,15 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 /* 4 · ssh guest@alejandro — the interactive guest shell                */
 /* ------------------------------------------------------------------ */
 
+/** The cheat sheet reads straight off the shared registry — shell-kind,
+    non-hidden commands, in registry order — so it can never drift from the
+    guest shell's real command set. */
+const GUIDE_COMMANDS = COMMANDS.filter(isShellHelpCommand);
+
 function TerminalSection({ locale }: { locale: Locale }) {
   const ui = uiCopy[locale];
   const sectionRef = useSectionReveals(locale);
+  const { runShellCommand } = useProtoContext();
 
   return (
     <section ref={sectionRef} id="terminal" data-proto-section="terminal" className="proto-section">
@@ -1031,11 +1046,17 @@ function TerminalSection({ locale }: { locale: Locale }) {
           <TerminalWindow title={ui.guideTitle} animated>
             <div className="tui-body">
               <div className="proto-guide-list">
-                {TERMINAL_COMMANDS.map(({ cmd, desc }) => (
-                  <div key={cmd} className="proto-guide-row" data-rise>
-                    <span className="proto-guide-cmd">❯ {cmd}</span>
-                    <span className="proto-guide-desc">{desc[locale]}</span>
-                  </div>
+                {GUIDE_COMMANDS.map((command) => (
+                  <button
+                    key={command.id}
+                    type="button"
+                    className="proto-guide-row"
+                    data-rise
+                    onClick={() => runShellCommand?.(command.label[locale])}
+                  >
+                    <span className="proto-guide-cmd">❯ {command.label[locale]}</span>
+                    <span className="proto-guide-desc">{command.hint[locale]}</span>
+                  </button>
                 ))}
               </div>
               <p className="proto-guide-hint" data-rise>

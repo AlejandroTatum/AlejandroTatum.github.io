@@ -32,6 +32,22 @@
   line-height: 1.65;
 }
 
+/* Konami easter egg: amber phosphor palette, session-only (no persistence).
+   Overrides the same custom properties every other rule reads from, so the
+   whole page recolors without touching component CSS. Every override keeps
+   ≥4.5:1 contrast against --tbg. */
+.proto-root.is-overdrive {
+  --ttext: #ffcf8a;
+  --tdim: #cc9a5c;
+  --tfaint: #b8814a;
+  --trose: #ffb454;
+  --trose-soft: #ffd9a0;
+  --tcyan: #ff8c42;
+  --tgreen: #ffcc66;
+  --tpeach: #ffa500;
+  --tpurple: #ff7f50;
+}
+
 /* A11y + language meta rows: these rows scroll away with content. */
 .proto-root ::selection {
   background: var(--trose);
@@ -64,22 +80,59 @@
   border-radius: 6px;
 }
 
-/* CRT scanlines + vignette. Purely decorative, static (no flicker). */
+/* CRT scanlines + vignette. Purely decorative, static (no flicker) outside
+   overdrive. Strength lives in custom properties so overdrive can turn them
+   up without duplicating the gradients. */
 .proto-scanlines {
+  --scan-vignette: 0.42;
+  --scan-line: 0.16;
   pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 95;
   background:
-    radial-gradient(ellipse at center, transparent 58%, rgba(6, 4, 10, 0.42) 100%),
-    repeating-linear-gradient(0deg, rgba(4, 2, 8, 0.16) 0 1px, transparent 1px 3px);
+    radial-gradient(ellipse at center, transparent 58%, rgba(6, 4, 10, var(--scan-vignette)) 100%),
+    repeating-linear-gradient(0deg, rgba(4, 2, 8, var(--scan-line)) 0 1px, transparent 1px 3px);
 }
 
 @media (max-width: 640px) {
   .proto-scanlines {
-    background:
-      radial-gradient(ellipse at center, transparent 62%, rgba(6, 4, 10, 0.3) 100%),
-      repeating-linear-gradient(0deg, rgba(4, 2, 8, 0.1) 0 1px, transparent 1px 3px);
+    --scan-vignette: 0.3;
+    --scan-line: 0.1;
+  }
+}
+
+/* Overdrive forces scanlines on (even if the visitor turned CRT off) and
+   turns them up. */
+.proto-root.is-overdrive .proto-scanlines {
+  --scan-vignette: 0.6;
+  --scan-line: 0.26;
+  opacity: 0.97;
+}
+
+.proto-root.is-overdrive .proto-scanlines.is-off {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .proto-root.is-overdrive .proto-scanlines {
+    animation: proto-overdrive-flicker 6s ease-in-out infinite;
+  }
+}
+
+/* ±3% around the 0.97 baseline set above. */
+@keyframes proto-overdrive-flicker {
+  0%,
+  100% {
+    opacity: 0.97;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.94;
   }
 }
 
@@ -152,10 +205,16 @@
   transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
 }
 
+/* Keycap styling — the tab numbers double as the 0-5 keyboard shortcuts. */
 .proto-tab-index {
   color: var(--tfaint);
   font-size: 0.68rem;
-  transition: color 140ms ease;
+  line-height: 1.4;
+  border: 1px solid var(--tborder);
+  border-radius: 3px;
+  padding: 0 0.32em;
+  box-shadow: 1px 1px 0 var(--tborder);
+  transition: color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .proto-tab-icon {
@@ -181,6 +240,11 @@
 .proto-tab.is-active .proto-tab-index,
 .proto-tab.is-active .proto-tab-icon {
   color: var(--tab-accent);
+}
+
+.proto-tab.is-active .proto-tab-index {
+  border-color: color-mix(in srgb, var(--tab-accent) 55%, var(--tborder));
+  box-shadow: 1px 1px 0 var(--tab-accent);
 }
 
 .proto-tab.is-active .proto-tab-label {
@@ -310,6 +374,26 @@
 
 .proto-scroll-hint {
   color: var(--tfaint);
+}
+
+/* Amber badge shown in the status bar while overdrive is on. Uses the same
+   --trose/--tbg pair as the rest of the chrome, so it recolors for free. */
+.proto-overdrive-badge {
+  color: var(--tbg);
+  background: var(--trose);
+  border-radius: 3px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.proto-keys-hint {
+  color: var(--tfaint);
+}
+
+.proto-keys-hint-narrow {
+  display: none;
 }
 
 .proto-scanlines.is-off {
@@ -905,6 +989,18 @@
 }
 
 .proto-about-stats-out {
+  color: var(--tfaint);
+}
+
+/* Client-only GitHub signal line, appended under the stats row once (if) it
+   resolves — min-height reserves its space so nothing jumps on arrival. */
+.proto-about-github {
+  min-height: 1.1em;
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+}
+
+.proto-about-github-out {
   color: var(--tfaint);
 }
 
@@ -1639,10 +1735,23 @@
   grid-template-columns: minmax(7.5rem, auto) 1fr;
   gap: 0.9rem;
   align-items: baseline;
+  width: 100%;
   border: 1px solid var(--tborder);
   border-radius: 6px;
   background: var(--tpanel-2);
   padding: 0.55rem 0.8rem;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+/* Cheat-sheet rows are buttons now: click one to run it in the shell. */
+.proto-guide-row:hover,
+.proto-guide-row:focus-visible {
+  border-color: var(--tborder-bright);
+  background: color-mix(in srgb, var(--tcyan) 8%, var(--tpanel-2));
 }
 
 .proto-guide-cmd {
@@ -1854,4 +1963,294 @@
     grid-template-columns: 6.4rem 1fr;
     gap: 0.55rem;
   }
+
+  .proto-keys-hint-full {
+    display: none;
+  }
+
+  .proto-keys-hint-narrow {
+    display: inline;
+  }
+}
+
+/* ---------------- "open <project>" highlight ---------------- */
+
+.proto-proj.is-flash {
+  animation: proto-flash-pulse 900ms ease;
+}
+
+@keyframes proto-flash-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tcyan) 70%, transparent);
+  }
+
+  30% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tcyan) 45%, transparent);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proto-proj.is-flash {
+    animation: none;
+  }
+}
+
+/* ---------------- command palette ---------------- */
+
+.proto-cmdk-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  padding: 4.5rem 1rem 1rem;
+  background: rgba(6, 4, 10, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.proto-cmdk {
+  width: min(34rem, 100%);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.proto-cmdk-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--tborder);
+  padding: 0.85rem 1.1rem;
+  flex: none;
+}
+
+.proto-cmdk-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ttext);
+  caret-color: var(--trose);
+  font-family: var(--tmono);
+  font-size: 0.95rem;
+}
+
+.proto-cmdk-input:focus {
+  outline: none;
+}
+
+.proto-cmdk-input::placeholder {
+  color: var(--tfaint);
+}
+
+.proto-cmdk-list {
+  overflow-y: auto;
+  padding: 0.6rem;
+}
+
+.proto-cmdk-empty {
+  padding: 0.8rem;
+  color: var(--tfaint);
+  font-size: 0.85rem;
+}
+
+.proto-cmdk-group {
+  margin-bottom: 0.5rem;
+}
+
+.proto-cmdk-group-label {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  color: var(--tfaint);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proto-cmdk-group ul,
+.proto-cmdk-list > ul {
+  display: grid;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.proto-cmdk-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tdim);
+  font: inherit;
+  text-align: left;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+}
+
+.proto-cmdk-row.is-active {
+  border-color: var(--tborder-bright);
+  background: var(--tpanel-2);
+  color: var(--ttext);
+}
+
+.proto-cmdk-label {
+  color: var(--tcyan);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.proto-cmdk-row.is-active .proto-cmdk-label {
+  color: var(--trose);
+}
+
+.proto-cmdk-hint {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.proto-cmdk-shortcut {
+  flex: none;
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  color: var(--tfaint);
+  font-size: 0.72rem;
+}
+
+.proto-cmdk-footer {
+  flex: none;
+  border-top: 1px solid var(--tborder);
+  padding: 0.6rem 1.1rem;
+  color: var(--tfaint);
+  font-size: 0.74rem;
+}
+
+@media (max-width: 640px) {
+  .proto-cmdk-backdrop {
+    padding: 3.2rem 0.6rem 0.6rem;
+  }
+}
+
+/* ---------------- shortcuts overlay ---------------- */
+
+.proto-shortcuts-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(6, 4, 10, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.proto-shortcuts {
+  width: min(30rem, 100%);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.proto-shortcuts-group {
+  margin-bottom: 1.1rem;
+}
+
+.proto-shortcuts-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--tfaint);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proto-shortcuts-rows {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.proto-shortcuts-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--tdim);
+}
+
+.proto-shortcuts-key {
+  flex: none;
+  min-width: 2.2rem;
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  color: var(--tcyan);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.proto-shortcuts-close {
+  margin-top: 0.4rem;
+  color: var(--tfaint);
+  font-size: 0.76rem;
+}
+
+/* ---------------- neofetch + matrix ---------------- */
+
+.proto-neofetch {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.3rem 0;
+}
+
+.proto-neofetch-portrait {
+  flex: none;
+  width: 96px;
+  height: auto;
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  image-rendering: pixelated;
+}
+
+.proto-neofetch-facts {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.proto-neofetch-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.proto-neofetch-row dt {
+  flex: none;
+  min-width: 3.4rem;
+  color: var(--trose);
+  font-weight: 600;
+}
+
+.proto-neofetch-row dd {
+  margin: 0;
+  color: var(--tdim);
+}
+
+.proto-matrix {
+  color: var(--tgreen);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  white-space: pre;
 }

@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { FiCpu, FiFileText, FiFilm, FiFolder, FiMail, FiMaximize, FiTerminal, FiUser, FiX } from "react-icons/fi";
+import {
+  FiCommand,
+  FiCpu,
+  FiFileText,
+  FiFilm,
+  FiFolder,
+  FiMail,
+  FiMaximize,
+  FiTerminal,
+  FiUser,
+  FiX,
+} from "react-icons/fi";
 import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Locale } from "@/lib/i18n";
 
@@ -29,22 +40,44 @@ const protoCopy = {
     crt: "toggle CRT scanlines",
     fullscreen: "toggle fullscreen",
     close: "close dev mode — switch to the pixel site",
+    commands: "commands (⌘K)",
+    statusHint: "? shortcuts · ⌘K commands",
+    statusHintNarrow: "⌘K",
   },
   es: {
     tabHint: "secciones",
     crt: "alternar líneas CRT",
     fullscreen: "alternar pantalla completa",
     close: "cerrar modo dev — cambiar al sitio píxel",
+    commands: "comandos (⌘K)",
+    statusHint: "? atajos · ⌘K comandos",
+    statusHintNarrow: "⌘K",
   },
 } as const;
+
+/** Toggles fullscreen on the document — shared by the window control button
+    and the "fullscreen" command in the shared command registry. */
+export function toggleFullscreen(): void {
+  try {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void document.documentElement.requestFullscreen();
+    }
+  } catch {
+    // Fullscreen can be unavailable (embedded webviews) — stay silent.
+  }
+}
 
 type ChromeProps = {
   locale: Locale;
   active: string;
   crtOn: boolean;
+  overdrive: boolean;
   onToggleLocale: () => void;
   onToggleCrt: () => void;
   onActiveChange: (id: string) => void;
+  onOpenPalette: () => void;
 };
 
 /**
@@ -52,7 +85,16 @@ type ChromeProps = {
  * tabs (color-coded per section) and window controls that all do something —
  * CRT scanlines toggle, fullscreen, and close (back to the pixel site).
  */
-export function Chrome({ locale, active, crtOn, onToggleLocale, onToggleCrt, onActiveChange }: ChromeProps) {
+export function Chrome({
+  locale,
+  active,
+  crtOn,
+  overdrive,
+  onToggleLocale,
+  onToggleCrt,
+  onActiveChange,
+  onOpenPalette,
+}: ChromeProps) {
   const progressTextRef = useRef<HTMLSpanElement>(null);
   const progressBarRef = useRef<HTMLSpanElement>(null);
   const t = protoCopy[locale];
@@ -96,18 +138,6 @@ export function Chrome({ locale, active, crtOn, onToggleLocale, onToggleCrt, onA
     };
   }, []);
 
-  const toggleFullscreen = () => {
-    try {
-      if (document.fullscreenElement) {
-        void document.exitFullscreen();
-      } else {
-        void document.documentElement.requestFullscreen();
-      }
-    } catch {
-      // Fullscreen can be unavailable (embedded webviews) — stay silent.
-    }
-  };
-
   return (
     <>
       <div className="proto-topbar">
@@ -149,6 +179,9 @@ export function Chrome({ locale, active, crtOn, onToggleLocale, onToggleCrt, onA
             <span className={locale === "es" ? "proto-lang-active" : undefined}>es</span>
           </button>
           <div className="proto-winctl">
+            <button type="button" onClick={onOpenPalette} title={t.commands} aria-label={t.commands}>
+              <FiCommand aria-hidden="true" />
+            </button>
             <button
               type="button"
               className={crtOn ? "is-on" : undefined}
@@ -173,7 +206,12 @@ export function Chrome({ locale, active, crtOn, onToggleLocale, onToggleCrt, onA
         <span className="proto-cwd">~/portfolio/{active}</span>
         <span className="proto-branch">(main)</span>
         <span className="proto-status-right">
+          {overdrive ? <span className="proto-overdrive-badge">OVERDRIVE</span> : null}
           <span className="proto-scroll-hint">{locale === "en" ? "scroll = execute ↓" : "scroll = ejecutar ↓"}</span>
+          <span className="proto-keys-hint">
+            <span className="proto-keys-hint-full">{t.statusHint}</span>
+            <span className="proto-keys-hint-narrow">{t.statusHintNarrow}</span>
+          </span>
           <span className="proto-progress">
             [<span ref={progressBarRef} className="proto-progress-bar">░░░░░░░░░░</span>]{" "}
             <span ref={progressTextRef}>00%</span>
