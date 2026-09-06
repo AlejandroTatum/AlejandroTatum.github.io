@@ -22,21 +22,24 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alejandro Padilla | Automation, AI Agents & Full-Stack Software",
+  title: "Alejandro Padilla · Full-Stack Developer — Python, TypeScript & Applied AI",
   description:
-    "Portfolio of Alejandro Padilla, a software developer in Ecuador building automation, AI-agent, backend and full-stack solutions for business problems.",
+    "Full-stack developer in Ecuador building FastAPI and Next.js systems on PostgreSQL, with LLM automation and computer vision where they remove real work. Open to part-time and contract roles, remote with US-timezone overlap.",
   keywords: [
     "Alejandro Padilla",
-    "automation developer",
-    "AI agents",
-    "backend developer",
     "full-stack developer",
+    "Python developer",
+    "FastAPI",
+    "Next.js",
+    "TypeScript",
+    "applied AI",
+    "remote developer",
     "Ecuador",
   ],
   openGraph: {
-    title: "Alejandro Padilla | Automation & Software Development",
+    title: "Alejandro Padilla · Full-Stack Developer",
     description:
-      "Automation, AI-agent, backend and full-stack software built around practical business problems.",
+      "FastAPI · Next.js · PostgreSQL · Docker · applied AI. Client work, public code, open to part-time and contract roles.",
     type: "website",
     url: "https://alejandrotatum.github.io/",
   },

@@ -16,7 +16,7 @@ export const copy = {
       titleLast: "Padilla",
       role: "Full-Stack Developer · Python & TypeScript",
       description:
-        "I design, ship, and operate full-stack systems in production — FastAPI and Next.js services, asynchronous processing, and LLM-backed automation where it measurably removes manual work.",
+        "I build and run full-stack systems: FastAPI and Next.js services on PostgreSQL, shipped with Docker, and LLM automation where it cuts real manual work.",
       viewProjects: "View Projects",
       contactMe: "Contact Me",
       githubLabel: "View Alejandro's GitHub profile",
@@ -24,28 +24,21 @@ export const copy = {
       metadataLabel: "Professional details",
       metadata: ["Full-stack", "EN / ES", "Ecuador, remote"],
       heroImageAlt: "Pixel-art portrait of Alejandro Padilla",
-      status: "building practical systems",
+      status: "open · part-time / contract",
     },
     about: {
       kicker: "$ about-me",
-      title: "Technical execution with a business purpose.",
+      title: "Systems that ship, built for a business reason.",
       paragraphs: [
         "I'm Alejandro Padilla, a full-stack developer and Computer Science student at Universidad Nacional de Loja in Ecuador.",
         "I build and operate systems that real clients depend on: domain modeling, backend services, asynchronous job processing, authentication, automated tests, and deployment. I also apply AI as an engineering tool — LLM-backed automation and agent-orchestrated development workflows — when it removes measurable manual work.",
       ],
-      languageBadge: "EN B2 · ES native",
+      languageBadge: "EN B1 · ES native",
       timeline: [
         {
-          title: "Backend & full-stack",
-          detail: "Python, FastAPI, Celery, PostgreSQL, TypeScript, Next.js, Docker",
-        },
-        {
-          title: "Applied AI",
-          detail: "LLM-backed automation, agent-orchestrated workflows, computer vision with YOLO",
-        },
-        {
-          title: "Open to collaboration",
-          detail: "Part-time and contract work, remote with full overlap on US time zones",
+          title: "How I work",
+          detail:
+            "Clear scope before code, short deliveries, documented tests and deployment. AI as a working tool, not a headline.",
         },
       ],
     },
@@ -66,9 +59,9 @@ export const copy = {
     },
     contact: {
       kicker: "$ contact",
-      title: "Let's build something useful.",
+      title: "Let's build something that ships.",
       description:
-        "Have a system to build, a production codebase that needs an extra engineer, or a part-time role that fits this focus? Send the problem, scope or role details and I will respond with relevant questions.",
+        "A system to build, or a team that needs another engineer? Tell me the problem. You'll get a read on scope and the first steps.",
       info: [
         { label: "Location", value: "Ecuador / Remote" },
         { label: "Native language", value: "Spanish" },
@@ -98,7 +91,7 @@ export const copy = {
       titleLast: "Padilla",
       role: "Desarrollador Full-Stack · Python y TypeScript",
       description:
-        "Diseño, publico y opero sistemas full-stack en producción: servicios en FastAPI y Next.js, procesamiento asíncrono y automatización con LLM donde elimina trabajo manual medible.",
+        "Construyo y opero sistemas full-stack: servicios FastAPI y Next.js sobre PostgreSQL, desplegados con Docker, y automatización con LLM donde recorta trabajo manual real.",
       viewProjects: "Ver proyectos",
       contactMe: "Contactarme",
       githubLabel: "Ver el perfil de GitHub de Alejandro",
@@ -106,28 +99,21 @@ export const copy = {
       metadataLabel: "Datos profesionales",
       metadata: ["Full-stack", "EN / ES", "Ecuador, remoto"],
       heroImageAlt: "Retrato pixel art de Alejandro Padilla",
-      status: "construyendo sistemas prácticos",
+      status: "disponible · part-time / contrato",
     },
     about: {
       kicker: "$ sobre-mi",
-      title: "Ejecución técnica con propósito de negocio.",
+      title: "Sistemas que salen a producción, con un porqué de negocio.",
       paragraphs: [
         "Soy Alejandro Padilla, desarrollador full-stack y estudiante de Computación en la Universidad Nacional de Loja, Ecuador.",
         "Construyo y opero sistemas de los que dependen clientes reales: modelado de dominio, servicios de backend, procesamiento asíncrono, autenticación, pruebas automatizadas y despliegue. También aplico IA como herramienta de ingeniería —automatización con LLM y flujos de desarrollo orquestados por agentes— cuando elimina trabajo manual medible.",
       ],
-      languageBadge: "EN B2 · ES nativo",
+      languageBadge: "EN B1 · ES nativo",
       timeline: [
         {
-          title: "Backend y full-stack",
-          detail: "Python, FastAPI, Celery, PostgreSQL, TypeScript, Next.js, Docker",
-        },
-        {
-          title: "IA aplicada",
-          detail: "Automatización con LLM, flujos orquestados por agentes, visión por computador con YOLO",
-        },
-        {
-          title: "Disponible para colaborar",
-          detail: "Trabajo part-time y por contrato, remoto con solapamiento total con husos horarios de EE. UU.",
+          title: "Cómo trabajo",
+          detail:
+            "Alcance claro antes de escribir código, entregas cortas, tests y despliegue documentados. IA como herramienta de trabajo, no como titular.",
         },
       ],
     },
@@ -148,9 +134,9 @@ export const copy = {
     },
     contact: {
       kicker: "$ contacto",
-      title: "Construyamos algo útil.",
+      title: "Construyamos algo que llegue a producción.",
       description:
-        "¿Tienes un sistema por construir, una base de código en producción que necesita un ingeniero más o un rol part-time alineado con este enfoque? Envía el problema, alcance o detalles del rol y responderé con preguntas relevantes.",
+        "¿Un sistema por construir o un equipo que necesita otro ingeniero? Cuéntame el problema. Te respondo con una lectura del alcance y los primeros pasos.",
       info: [
         { label: "Ubicación", value: "Ecuador / Remoto" },
         { label: "Idioma nativo", value: "Español" },

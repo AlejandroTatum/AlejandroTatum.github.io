@@ -11,7 +11,7 @@ const BOOT_LINES: Array<{ kind: "cmd" | "ok" | "info"; text: string }> = [
   { kind: "info", text: "portfolio-os 2.0 (dev-mode) — alejandro padilla" },
   { kind: "cmd", text: "$ ./boot --mode=dev" },
   { kind: "ok", text: "mounted ~/projects (8 entries)" },
-  { kind: "ok", text: "loaded skills.tree (5 branches)" },
+  { kind: "ok", text: "loaded skills.tree (8 branches)" },
   { kind: "ok", text: "linked github.com/AlejandroTatum" },
   { kind: "ok", text: "bilingual content: en / es" },
   { kind: "cmd", text: "$ whoami --verbose &" },

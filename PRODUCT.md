@@ -18,7 +18,7 @@ Hiring teams and small clients looking for a part-time / contract full-stack or 
 
 - All projects, links, emails and claims come from `src/data/projects.ts`, `src/lib/constants.ts` and `src/lib/i18n.ts`. Never invent metrics, percentages, clients or capabilities.
 - Contact: alejandro.padilla@unl.edu.ec · github.com/AlejandroTatum · LinkedIn.
-- Bilingual EN/ES is a feature (EN B2 / ES native) and must survive any redesign.
+- Bilingual EN/ES is a feature (EN B1 / ES native) and must survive any redesign.
 
 ## Constraints
 
@@ -29,4 +29,4 @@ Hiring teams and small clients looking for a part-time / contract full-stack or 
 ## Brand commitments
 
 - Pixel-art assets (portrait, project illustrations) are original identity material and may cross between modes.
-- Voice: direct, technical, honest about status (e.g. "free-tier hosting may require startup time").
+- Voice: direct, technical, honest about status (e.g. "free tier, first load may take a few seconds").

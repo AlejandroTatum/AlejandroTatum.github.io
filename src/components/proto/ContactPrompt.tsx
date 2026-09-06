@@ -22,7 +22,7 @@ export const TERMINAL_COMMANDS: Array<{ cmd: string; desc: Record<Locale, string
   },
   {
     cmd: "projects",
-    desc: { en: "what has been shipped", es: "qué se ha construido" },
+    desc: { en: "what I've shipped", es: "lo que he construido" },
   },
   {
     cmd: "contact",
@@ -42,21 +42,23 @@ const promptCopy = {
   en: {
     placeholder: "type 'help' for commands",
     initial: "interactive prompt ready. type 'help' to list commands.",
-    whoami: "alejandro padilla — full-stack developer · python & typescript · applied ai",
+    whoami:
+      "alejandro padilla — full-stack developer · python & typescript · applied ai · open to part-time / contract",
     stack: "gentle-ai at the core + 8 branches: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (run `open ~/stack` above)",
-    projects: "top 3 in ~/featured (1 draft) — 6 more hidden in .archive; the curious run `ls -a ~/projects`",
+    projects: "2 in production, 1 launching, 6 in .archive — run `ls -a ~/projects` for everything",
     contact: "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
-    sudo: "[sudo] permission granted — offer under construction… use 'contact' for the real channel",
+    sudo: "[sudo] access granted — part-time / contract · remote · US overlap · next step: mail alejandro.padilla@unl.edu.ec",
     notFound: (cmd: string) => `command not found: ${cmd} — try 'help'`,
   },
   es: {
     placeholder: "escribe 'help' para comandos",
     initial: "prompt interactivo listo. escribe 'help' para ver comandos.",
-    whoami: "alejandro padilla — desarrollador full-stack · python y typescript · ia aplicada",
+    whoami:
+      "alejandro padilla — desarrollador full-stack · python y typescript · ia aplicada · disponible part-time / contrato",
     stack: "gentle-ai en el núcleo + 8 ramas: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (ejecuta `open ~/stack` arriba)",
-    projects: "top 3 en ~/featured (1 borrador) — 6 más ocultos en .archive; los curiosos ejecutan `ls -a ~/proyectos`",
+    projects: "2 en producción, 1 por publicar, 6 en .archive — ejecuta `ls -a ~/proyectos` para ver todo",
     contact: "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
-    sudo: "[sudo] permiso concedido — oferta en construcción… usa 'contact' para el canal real",
+    sudo: "[sudo] acceso concedido — part-time / contrato · remoto · horario EE. UU. · siguiente paso: escribe a alejandro.padilla@unl.edu.ec",
     notFound: (cmd: string) => `comando no encontrado: ${cmd} — prueba 'help'`,
   },
 } as const;

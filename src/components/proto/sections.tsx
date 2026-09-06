@@ -59,48 +59,49 @@ import { DocAutomationPreview } from "@/components/proto/DocAutomationPreview";
 const uiCopy = {
   en: {
     heroCmd: "whoami --verbose",
-    heroComment: "# full-stack · applied ai",
+    heroComment: "# profile",
+    heroHeadline: "From a business problem to a system in production.",
     heroShort:
-      "I design, ship and operate full-stack systems — FastAPI & Next.js services, async processing, and LLM automation where it removes real work.",
+      "I design, build and run the whole piece: API, database, frontend and deployment. Live client sites and public code to prove it.",
     ctaProjects: "./view-projects",
     ctaContact: "./contact",
     portraitTitle: "alejandro.png — pixel viewer",
+    flagLabel: "Flag of Ecuador (pixel art)",
     sysinfo: [
-      { key: "focus", value: "Full-stack · FastAPI · Next.js" },
-      { key: "ai", value: "LLM automation · agents · YOLO" },
-      { key: "languages", value: "es native · en b2" },
+      { key: "stack", value: "FastAPI · Next.js · PostgreSQL · Docker" },
+      { key: "ai", value: "LLM · agents · YOLO" },
+      { key: "base", value: "Ecuador · remote · US hours" },
     ],
-    sysLocation: "Ecuador · remote",
     aboutCmd: "cat about.md",
     aboutComment: "# trajectory",
     aboutTitle: "about.md — read-only",
-    aboutLede: "Full-stack developer & CS student @ Universidad Nacional de Loja (Ecuador).",
-    aboutChips: ["cs student @ UNL", "es native · en b2", "ecuador · remote"],
+    aboutLede:
+      "Computer Science student at Universidad Nacional de Loja (Ecuador), with client work in production before graduating.",
+    aboutChips: ["cs student @ UNL", "es native · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# visual mode",
     stackTitle: "stack — capability explorer",
     gentleName: "gentle-ai",
-    gentleComment: "core of my AI-assisted workflow",
+    gentleComment: "spec-driven dev workflow I use daily",
     projectsCmd: "ls ~/featured",
-    projectsComment: "# top 3 · draft",
-    projectsTitle: "featured — top 3 (draft)",
-    topSub: "the three builds that represent me best — everything else lives in the archive below",
+    projectsComment: "# top 3 · production first",
+    projectsTitle: "featured — top 3",
+    topSub: "the three builds that best show what I ship",
     visitSite: "open elhornodelpinguino.com",
-    draftBadge: "draft",
-    draftDesc: "Entry being curated — final data coming soon.",
-    draftStatus: "draft — do not publish yet",
+    draftBadge: "final review",
     cataclubDesc:
-      "Website for CATA CLUB — Loja's table tennis club: schedules, fees, gallery and a members' area. Final home: cataclub.com.",
-    cataclubCtx: "client project · draft",
-    cataclubStatus: "almost done — coming soon at cataclub.com",
-    cataclubPreview: "cataclub.com — soon",
+      "Website for CATA CLUB, Loja's table tennis club: schedules, fees, gallery and a members' area. Next.js frontend over a FastAPI and PostgreSQL API. Launching at cataclub.com.",
+    cataclubCtx: "Client project",
+    cataclubStatus: "launching at cataclub.com",
+    cataclubPreview: "cataclub.com — launching soon",
     cataclubImageAlt: "Preview of the CATA CLUB website under construction",
-    cataclubTags: ["web", "table tennis", "loja"],
-    hornoStatus: "live · finished",
+    cataclubTags: ["Next.js", "FastAPI", "PostgreSQL"],
+    hornoStatus: "live · client site",
     hornoPreview: "elhornodelpinguino.com — live",
     hornoImageAlt: "Preview of the El Horno del Pingüino website",
     reportPreview: "report build — demo",
     openSourceTag: "open source",
+    sourceLink: "source → github",
     uniBadge: "university work",
     yoloPreviewTitle: "yololab.streamlit.app — demo",
     yoloPreviewAlt: "Preview of the YOLO Complexity Lab web app",
@@ -109,7 +110,7 @@ const uiCopy = {
     hideLabel: "ls ~/projects",
     archiveDir: ".archive/",
     contactCmd: "contact --interactive",
-    contactComment: "# say hi",
+    contactComment: "# write me",
     contactTitle: "visitor@alejandro:~ — live prompt",
     terminalCmd: "ssh guest@alejandro",
     terminalComment: "# interactive",
@@ -121,48 +122,49 @@ const uiCopy = {
   },
   es: {
     heroCmd: "whoami --verbose",
-    heroComment: "# full-stack · ia aplicada",
+    heroComment: "# perfil",
+    heroHeadline: "De un problema de negocio a un sistema en producción.",
     heroShort:
-      "Diseño, publico y opero sistemas full-stack — servicios FastAPI y Next.js, procesamiento asíncrono y automatización con LLM donde elimina trabajo real.",
+      "Diseño, construyo y opero la pieza completa: API, base de datos, frontend y despliegue. Sitios de clientes en vivo y código público para comprobarlo.",
     ctaProjects: "./ver-proyectos",
     ctaContact: "./contacto",
     portraitTitle: "alejandro.png — visor de píxeles",
+    flagLabel: "Bandera del Ecuador (pixel art)",
     sysinfo: [
-      { key: "enfoque", value: "Full-stack · FastAPI · Next.js" },
-      { key: "ia", value: "automatización LLM · agentes · YOLO" },
-      { key: "idiomas", value: "es nativo · en b2" },
+      { key: "stack", value: "FastAPI · Next.js · PostgreSQL · Docker" },
+      { key: "ia", value: "LLM · agentes · YOLO" },
+      { key: "base", value: "Ecuador · remoto · horario EE. UU." },
     ],
-    sysLocation: "Ecuador · remoto",
     aboutCmd: "cat sobre-mi.md",
     aboutComment: "# trayectoria",
     aboutTitle: "sobre-mi.md — solo lectura",
-    aboutLede: "Desarrollador full-stack y estudiante de Cs. de la Computación @ Universidad Nacional de Loja (Ecuador).",
-    aboutChips: ["cs @ UNL", "es nativo · en b2", "ecuador · remoto"],
+    aboutLede:
+      "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador), con trabajo de clientes en producción desde antes de graduarme.",
+    aboutChips: ["cs @ UNL", "es nativo · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# modo visual",
     stackTitle: "stack — explorador de capacidades",
     gentleName: "gentle-ai",
-    gentleComment: "# núcleo de mi flujo de trabajo con IA",
+    gentleComment: "flujo spec-driven que uso a diario",
     projectsCmd: "ls ~/destacados",
-    projectsComment: "# top 3 · borrador",
-    projectsTitle: "destacados — top 3 (borrador)",
-    topSub: "los tres trabajos que mejor me representan — todo lo demás queda en el archivo, abajo",
+    projectsComment: "# top 3 · producción primero",
+    projectsTitle: "destacados — top 3",
+    topSub: "los tres trabajos que mejor muestran lo que entrego",
     visitSite: "abrir elhornodelpinguino.com",
-    draftBadge: "borrador",
-    draftDesc: "Entrada en curación — los datos finales llegan pronto.",
-    draftStatus: "borrador — no publicar todavía",
+    draftBadge: "revisión final",
     cataclubDesc:
-      "Sitio para CATA CLUB — el club de tenis de mesa de Loja: horarios, valores, galería y área de socios. Casa final: cataclub.com.",
-    cataclubCtx: "proyecto de cliente · borrador",
-    cataclubStatus: "casi terminado — pronto en cataclub.com",
-    cataclubPreview: "cataclub.com — pronto",
+      "Sitio para CATA CLUB, el club de tenis de mesa de Loja: horarios, cuotas, galería y área de socios. Frontend en Next.js sobre una API en FastAPI y PostgreSQL. Se publica en cataclub.com.",
+    cataclubCtx: "Proyecto de cliente",
+    cataclubStatus: "se publica en cataclub.com",
+    cataclubPreview: "cataclub.com — próximamente",
     cataclubImageAlt: "Vista previa del sitio de CATA CLUB en construcción",
-    cataclubTags: ["web", "tenis de mesa", "loja"],
-    hornoStatus: "en vivo · terminado",
+    cataclubTags: ["Next.js", "FastAPI", "PostgreSQL"],
+    hornoStatus: "en vivo · sitio de cliente",
     hornoPreview: "elhornodelpinguino.com — en vivo",
     hornoImageAlt: "Vista previa del sitio de El Horno del Pingüino",
     reportPreview: "compilación de informe — demo",
     openSourceTag: "código abierto",
+    sourceLink: "código → github",
     uniBadge: "trabajo universitario",
     yoloPreviewTitle: "yololab.streamlit.app — demo",
     yoloPreviewAlt: "Vista previa de la app web YOLO Complexity Lab",
@@ -171,12 +173,12 @@ const uiCopy = {
     hideLabel: "ls ~/proyectos",
     archiveDir: ".archive/",
     contactCmd: "contacto --interactivo",
-    contactComment: "# saluda",
+    contactComment: "# escríbeme",
     contactTitle: "visitante@alejandro:~ — prompt en vivo",
     terminalCmd: "ssh guest@alejandro",
     terminalComment: "# interactiva",
     terminalTitle: "guest@alejandro — shell en vivo",
-    guideTitle: "comandos — chuleta",
+    guideTitle: "comandos — guía rápida",
     guideHint: "escríbelos en la shell →",
     footerNote: "next.js · gsap scrolltrigger · lenis",
     exitToPixel: "volver al modo píxel",
@@ -186,7 +188,13 @@ const uiCopy = {
 /** Ecuador tricolor in pixel-art form. The simplified coat of arms — condor
     over the oval with sky and Chimborazo — is what separates it from
     Colombia's plain tricolor. */
-function EcuadorFlag({ className = "proto-flag" }: { className?: string }) {
+function EcuadorFlag({
+  className = "proto-flag",
+  label,
+}: {
+  className?: string;
+  label: string;
+}) {
   const GOLD = "#FCD116";
   const SKY = "#8FBEE8";
   const SNOW = "#EDF3F8";
@@ -217,7 +225,7 @@ function EcuadorFlag({ className = "proto-flag" }: { className?: string }) {
   ];
 
   return (
-    <svg viewBox="0 0 24 16" className={className} role="img" aria-label="Bandera del Ecuador (pixel art)">
+    <svg viewBox="0 0 24 16" className={className} role="img" aria-label={label}>
       <rect width="24" height="8" fill="#FFDD00" />
       <rect y="8" width="24" height="4" fill="#034EA2" />
       <rect y="12" width="24" height="4" fill="#ED1C24" />
@@ -324,6 +332,9 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
           <p className="proto-hero-role" data-rise>
             {t.role}
           </p>
+          <p className="proto-hero-headline" data-rise>
+            {ui.heroHeadline}
+          </p>
           <p className="proto-hero-desc" data-rise>
             {ui.heroShort}
           </p>
@@ -334,13 +345,6 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
                 <span className="sysinfo-val">{row.value}</span>
               </div>
             ))}
-            <div className="sysinfo-row">
-              <span className="sysinfo-key">{locale === "en" ? "location" : "ubicación"}</span>
-              <span className="sysinfo-val sysinfo-loc">
-                <EcuadorFlag />
-                {ui.sysLocation}
-              </span>
-            </div>
             <div className="sysinfo-row">
               <span className="sysinfo-key">{locale === "en" ? "status" : "estado"}</span>
               <span className="sysinfo-val">
@@ -383,7 +387,7 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
               title={
                 <>
                   {ui.portraitTitle}
-                  <EcuadorFlag className="proto-flag proto-titlebar-flag" />
+                  <EcuadorFlag className="proto-flag proto-titlebar-flag" label={ui.flagLabel} />
                 </>
               }
             >
@@ -478,7 +482,8 @@ function AboutSection({ locale }: { locale: Locale }) {
     { scope: sectionRef, dependencies: [locale], revertOnUpdate: true },
   );
 
-  const statsLine = `${projects.length} ${locale === "en" ? "projects" : "proyectos"} · ${STACK_TREE[1].items.length} ${locale === "en" ? "languages" : "lenguajes"} · 1 ${locale === "en" ? "open-source skill" : "skill open-source"}`;
+  const productionCount = projects.filter((p) => p.category === "production").length;
+  const statsLine = `${projects.length} ${locale === "en" ? "projects" : "proyectos"} · ${STACK_TREE[1].items.length} ${locale === "en" ? "languages" : "lenguajes"} · ${productionCount} ${locale === "en" ? "in production" : "en producción"}`;
 
   return (
     <section ref={sectionRef} id="about" data-proto-section="about" className="proto-section">
@@ -627,7 +632,7 @@ const STACK_TREE: Array<{ slug: string; subtitle: Record<Locale, string>; items:
   },
   {
     slug: "quality",
-    subtitle: { en: "e2e, unit and integration evidence", es: "evidencia e2e, unit e integración" },
+    subtitle: { en: "e2e, unit and integration tests", es: "tests e2e, unitarios y de integración" },
     items: ["Playwright", "Vitest", "pytest"],
   },
   {
@@ -848,7 +853,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                 <div className="proto-proj-links">
                   {report.sourceUrl ? (
                     <a className="text-link" href={report.sourceUrl} target="_blank" rel="noreferrer">
-                      github → {ui.openSourceTag}
+                      {ui.sourceLink}
                     </a>
                   ) : null}
                 </div>
@@ -1010,9 +1015,6 @@ function ContactSection({ locale }: { locale: Locale }) {
           <span className="cmd-value">in/alejandro-emanuel-padilla-espinoza</span>
         </a>
       </div>
-      <p className="cmd-comment proto-contact-pointer" data-rise>
-        # {locale === "en" ? "prefer typing? run the guest shell above ↑" : "¿prefieres escribir? corre la shell de invitados arriba ↑"}
-      </p>
     </section>
   );
 }

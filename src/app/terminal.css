@@ -502,6 +502,17 @@
   font-weight: 600;
 }
 
+.proto-hero-headline {
+  font-family: var(--tmono);
+  margin-top: 0.9rem;
+  margin-bottom: 0.4rem;
+  max-width: 34rem;
+  color: var(--ttext);
+  font-size: clamp(1.05rem, 3.2vw, 1.45rem);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
 .proto-hero-desc {
   margin-top: 1rem;
   max-width: 34rem;
@@ -535,12 +546,6 @@
 
 .sysinfo-val {
   color: var(--tdim);
-}
-
-.sysinfo-loc {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .proto-flag {
@@ -1550,11 +1555,6 @@
 .proto-guide-hint {
   margin-top: 0.9rem;
   color: var(--tfaint);
-  font-size: 0.8rem;
-}
-
-.proto-contact-pointer {
-  margin-top: 1.1rem;
   font-size: 0.8rem;
 }
 
