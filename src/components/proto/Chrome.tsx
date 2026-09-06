@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { FiCpu, FiFileText, FiFilm, FiFolder, FiMail, FiMaximize, FiUser, FiX } from "react-icons/fi";
+import { FiCpu, FiFileText, FiFilm, FiFolder, FiMail, FiMaximize, FiTerminal, FiUser, FiX } from "react-icons/fi";
 import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Locale } from "@/lib/i18n";
 
@@ -17,9 +17,10 @@ export type ProtoSection = {
 export const PROTO_SECTIONS: ProtoSection[] = [
   { id: "whoami", cmd: "whoami", label: { en: "whoami", es: "quien-soy" }, icon: FiUser, color: "#ff9ec7" },
   { id: "about", cmd: "cat about.md", label: { en: "about", es: "sobre-mi" }, icon: FiFileText, color: "#c4b5fd" },
-  { id: "stack", cmd: "tree ~/stack", label: { en: "stack", es: "stack" }, icon: FiCpu, color: "#7ce8d8" },
-  { id: "projects", cmd: "ls ~/projects", label: { en: "projects", es: "proyectos" }, icon: FiFolder, color: "#ffd6a5" },
-  { id: "contact", cmd: "contact --interactive", label: { en: "contact", es: "contacto" }, icon: FiMail, color: "#9fe8a8" },
+  { id: "stack", cmd: "open ~/stack", label: { en: "stack", es: "stack" }, icon: FiCpu, color: "#7ce8d8" },
+  { id: "projects", cmd: "ls ~/featured", label: { en: "projects", es: "proyectos" }, icon: FiFolder, color: "#ffd6a5" },
+  { id: "terminal", cmd: "ssh guest@alejandro", label: { en: "terminal", es: "terminal" }, icon: FiTerminal, color: "#9fe8a8" },
+  { id: "contact", cmd: "contact --interactive", label: { en: "contact", es: "contacto" }, icon: FiMail, color: "#c4b5fd" },
 ];
 
 const protoCopy = {

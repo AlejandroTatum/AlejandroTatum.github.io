@@ -5,20 +5,45 @@ import type { Locale } from "@/lib/i18n";
 
 type Line = { kind: "in" | "out" | "ok" | "err"; text: string };
 
+/** The guest shell's command set — shared by the interactive prompt and the
+    cheat-sheet panel so the guide can never drift from the real commands. */
+export const TERMINAL_COMMANDS: Array<{ cmd: string; desc: Record<Locale, string> }> = [
+  {
+    cmd: "help",
+    desc: { en: "list available commands", es: "lista los comandos disponibles" },
+  },
+  {
+    cmd: "whoami",
+    desc: { en: "who is behind this portfolio", es: "quién está detrás del portafolio" },
+  },
+  {
+    cmd: "stack",
+    desc: { en: "capability branches", es: "ramas de capacidades" },
+  },
+  {
+    cmd: "projects",
+    desc: { en: "what has been shipped", es: "qué se ha construido" },
+  },
+  {
+    cmd: "contact",
+    desc: { en: "how to reach alejandro", es: "cómo contactar a alejandro" },
+  },
+  {
+    cmd: "sudo hire-me",
+    desc: { en: "the fast path", es: "la vía rápida" },
+  },
+  {
+    cmd: "clear",
+    desc: { en: "wipe the output", es: "limpia la salida" },
+  },
+];
+
 const promptCopy = {
   en: {
     placeholder: "type 'help' for commands",
     initial: "interactive prompt ready. type 'help' to list commands.",
-    help: [
-      ["whoami", "who is behind this portfolio"],
-      ["stack", "capability branches"],
-      ["projects", "what has been shipped"],
-      ["contact", "how to reach alejandro"],
-      ["sudo hire-me", "the fast path"],
-      ["clear", "wipe the output"],
-    ],
     whoami: "alejandro padilla — full-stack developer · python & typescript · applied ai",
-    stack: "gentle-ai at the core + 5 branches: automation-ai / backend-data / frontend / tools / delivery  (run `open ~/stack` above)",
+    stack: "gentle-ai at the core + 8 branches: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (run `open ~/stack` above)",
     projects: "top 3 in ~/featured (1 draft) — 6 more hidden in .archive; the curious run `ls -a ~/projects`",
     contact: "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
     sudo: "[sudo] permission granted — offer under construction… use 'contact' for the real channel",
@@ -27,16 +52,8 @@ const promptCopy = {
   es: {
     placeholder: "escribe 'help' para comandos",
     initial: "prompt interactivo listo. escribe 'help' para ver comandos.",
-    help: [
-      ["whoami", "quién está detrás de este portafolio"],
-      ["stack", "ramas de capacidades"],
-      ["projects", "qué se ha construido"],
-      ["contact", "cómo contactar a alejandro"],
-      ["sudo hire-me", "la vía rápida"],
-      ["clear", "limpiar la salida"],
-    ],
     whoami: "alejandro padilla — desarrollador full-stack · python y typescript · ia aplicada",
-    stack: "gentle-ai en el núcleo + 5 ramas: automation-ai / backend-data / frontend / tools / delivery  (ejecuta `open ~/stack` arriba)",
+    stack: "gentle-ai en el núcleo + 8 ramas: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (ejecuta `open ~/stack` arriba)",
     projects: "top 3 en ~/featured (1 borrador) — 6 más ocultos en .archive; los curiosos ejecutan `ls -a ~/proyectos`",
     contact: "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
     sudo: "[sudo] permiso concedido — oferta en construcción… usa 'contact' para el canal real",
@@ -70,7 +87,12 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
     }
 
     if (lower === "help") {
-      outputs.push(...t.help.map(([name, desc]) => ({ kind: "out" as const, text: `  ${name.padEnd(14)} ${desc}` })));
+      outputs.push(
+        ...TERMINAL_COMMANDS.map(({ cmd, desc }) => ({
+          kind: "out" as const,
+          text: `  ${cmd.padEnd(14)} ${desc[locale]}`,
+        })),
+      );
     } else if (lower === "whoami") {
       outputs.push({ kind: "ok", text: t.whoami });
     } else if (lower === "stack" || lower === "skills") {

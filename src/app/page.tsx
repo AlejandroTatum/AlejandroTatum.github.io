@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BootOverlay } from "@/components/proto/BootOverlay";
 import { Chrome, PROTO_SECTIONS } from "@/components/proto/Chrome";
@@ -10,6 +9,7 @@ import {
   HeroSection,
   ProjectsSection,
   StackSection,
+  TerminalSection,
   uiCopy,
 } from "@/components/proto/sections";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
@@ -58,12 +58,12 @@ export default function ProtoPage() {
           <AboutSection locale={locale} />
           <StackSection locale={locale} />
           <ProjectsSection locale={locale} />
+          <TerminalSection locale={locale} />
           <ContactSection locale={locale} />
 
           <footer className="proto-footer">
             <span>© 2026 alejandro padilla</span>
             <span>{ui.footerNote}</span>
-            <Link href="/pixel">{`[ ${ui.exitToPixel} ]`}</Link>
           </footer>
         </main>
       </div>

@@ -49,7 +49,7 @@ import { projects, type Project } from "@/data/projects";
 import { siteConfig } from "@/lib/constants";
 import { bindTerminalReveals, typeInto } from "@/components/proto/terminal";
 import { TerminalWindow } from "@/components/proto/TerminalWindow";
-import { ContactPrompt } from "@/components/proto/ContactPrompt";
+import { ContactPrompt, TERMINAL_COMMANDS } from "@/components/proto/ContactPrompt";
 import { DocAutomationPreview } from "@/components/proto/DocAutomationPreview";
 
 /* ------------------------------------------------------------------ */
@@ -111,6 +111,11 @@ const uiCopy = {
     contactCmd: "contact --interactive",
     contactComment: "# say hi",
     contactTitle: "visitor@alejandro:~ — live prompt",
+    terminalCmd: "ssh guest@alejandro",
+    terminalComment: "# interactive",
+    terminalTitle: "guest@alejandro — live shell",
+    guideTitle: "commands — cheat sheet",
+    guideHint: "type them in the shell →",
     footerNote: "next.js · gsap scrolltrigger · lenis",
     exitToPixel: "return to pixel mode",
   },
@@ -168,6 +173,11 @@ const uiCopy = {
     contactCmd: "contacto --interactivo",
     contactComment: "# saluda",
     contactTitle: "visitante@alejandro:~ — prompt en vivo",
+    terminalCmd: "ssh guest@alejandro",
+    terminalComment: "# interactiva",
+    terminalTitle: "guest@alejandro — shell en vivo",
+    guideTitle: "comandos — chuleta",
+    guideHint: "escríbelos en la shell →",
     footerNote: "next.js · gsap scrolltrigger · lenis",
     exitToPixel: "volver al modo píxel",
   },
@@ -932,7 +942,47 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 4 · contact --interactive                                           */
+/* 4 · ssh guest@alejandro — the interactive guest shell                */
+/* ------------------------------------------------------------------ */
+
+function TerminalSection({ locale }: { locale: Locale }) {
+  const ui = uiCopy[locale];
+  const sectionRef = useSectionReveals(locale);
+
+  return (
+    <section ref={sectionRef} id="terminal" data-proto-section="terminal" className="proto-section">
+      <CommandLine cmd={ui.terminalCmd} comment={ui.terminalComment} />
+      <div className="proto-contact-grid">
+        <div data-rise>
+          <TerminalWindow title={ui.guideTitle} animated>
+            <div className="tui-body">
+              <div className="proto-guide-list">
+                {TERMINAL_COMMANDS.map(({ cmd, desc }) => (
+                  <div key={cmd} className="proto-guide-row" data-rise>
+                    <span className="proto-guide-cmd">❯ {cmd}</span>
+                    <span className="proto-guide-desc">{desc[locale]}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="proto-guide-hint" data-rise>
+                # {ui.guideHint}
+              </p>
+            </div>
+          </TerminalWindow>
+        </div>
+        <div data-rise>
+          <TerminalWindow title={ui.terminalTitle} animated>
+            <div className="tui-body">
+              <ContactPrompt locale={locale} />
+            </div>
+          </TerminalWindow>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 5 · contact --interactive                                           */
 /* ------------------------------------------------------------------ */
 
 function ContactSection({ locale }: { locale: Locale }) {
@@ -943,32 +993,26 @@ function ContactSection({ locale }: { locale: Locale }) {
   return (
     <section ref={sectionRef} id="contact" data-proto-section="contact" className="proto-section">
       <CommandLine cmd={ui.contactCmd} comment={ui.contactComment} />
-      <div className="proto-contact-grid">
-        <div data-rise>
-          <p className="proto-contact-desc">{t.description}</p>
-          <div className="proto-contact-rows">
-            <a className="proto-contact-row" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
-              <span className="cmd-name">mail</span>
-              <span className="cmd-value">{siteConfig.email}</span>
-            </a>
-            <a className="proto-contact-row" href={siteConfig.github} target="_blank" rel="noreferrer">
-              <span className="cmd-name">github</span>
-              <span className="cmd-value">github.com/AlejandroTatum</span>
-            </a>
-            <a className="proto-contact-row" href={siteConfig.linkedin} target="_blank" rel="noreferrer">
-              <span className="cmd-name">linkedin</span>
-              <span className="cmd-value">in/alejandro-emanuel-padilla-espinoza</span>
-            </a>
-          </div>
-        </div>
-        <div data-rise>
-          <TerminalWindow title={ui.contactTitle}>
-            <div className="tui-body">
-              <ContactPrompt locale={locale} />
-            </div>
-          </TerminalWindow>
-        </div>
+      <p className="proto-contact-desc" data-rise>
+        {t.description}
+      </p>
+      <div className="proto-contact-rows" data-rise>
+        <a className="proto-contact-row" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
+          <span className="cmd-name">mail</span>
+          <span className="cmd-value">{siteConfig.email}</span>
+        </a>
+        <a className="proto-contact-row" href={siteConfig.github} target="_blank" rel="noreferrer">
+          <span className="cmd-name">github</span>
+          <span className="cmd-value">github.com/AlejandroTatum</span>
+        </a>
+        <a className="proto-contact-row" href={siteConfig.linkedin} target="_blank" rel="noreferrer">
+          <span className="cmd-name">linkedin</span>
+          <span className="cmd-value">in/alejandro-emanuel-padilla-espinoza</span>
+        </a>
       </div>
+      <p className="cmd-comment proto-contact-pointer" data-rise>
+        # {locale === "en" ? "prefer typing? run the guest shell above ↑" : "¿prefieres escribir? corre la shell de invitados arriba ↑"}
+      </p>
     </section>
   );
 }
@@ -980,6 +1024,7 @@ export {
   AboutSection,
   StackSection,
   ProjectsSection,
+  TerminalSection,
   ContactSection,
   uiCopy,
 };
