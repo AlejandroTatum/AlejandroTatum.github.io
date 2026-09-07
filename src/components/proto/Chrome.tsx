@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { activeLinePx, isAtPageEnd, resolveActiveSection } from "@/components/proto/activeSection";
 import {
   FiCommand,
   FiCpu,
@@ -14,7 +15,7 @@ import {
   FiUser,
   FiX,
 } from "react-icons/fi";
-import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Locale } from "@/lib/i18n";
 
 export type ProtoSection = {
@@ -99,24 +100,42 @@ export function Chrome({
   const progressBarRef = useRef<HTMLSpanElement>(null);
   const t = protoCopy[locale];
 
+  // Scroll-spy for the tabs. A plain scroll listener (not ScrollTrigger) so
+  // it also runs under prefers-reduced-motion, where Lenis and GSAP are off.
+  // Reads the section tops on every frame that scrolled — six elements, cheap.
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-proto-section]"));
+    if (sections.length === 0) return;
+
+    let frame = 0;
+    let lastId = "";
+    const update = () => {
+      frame = 0;
+      const tops = sections.map((section) => section.getBoundingClientRect().top);
+      const atEnd = isAtPageEnd(window.scrollY, document.documentElement.scrollHeight, window.innerHeight);
+      const index = resolveActiveSection(tops, activeLinePx(window.innerHeight), atEnd);
+      const id = sections[index]?.dataset.protoSection ?? "";
+      if (id && id !== lastId) {
+        lastId = id;
+        onActiveChange(id);
+      }
+    };
+    const schedule = () => {
+      if (frame === 0) frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [onActiveChange]);
+
   useGSAP(() => {
     if (prefersReducedMotion()) return;
-
-    const sections = gsap.utils.toArray<HTMLElement>("[data-proto-section]");
-    const triggers: ScrollTrigger[] = [];
-
-    sections.forEach((section) => {
-      triggers.push(
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top 55%",
-          end: "bottom 55%",
-          onToggle: (self) => {
-            if (self.isActive) onActiveChange(section.dataset.protoSection ?? "");
-          },
-        }),
-      );
-    });
 
     const progress = ScrollTrigger.create({
       start: 0,
@@ -133,7 +152,6 @@ export function Chrome({
     });
 
     return () => {
-      triggers.forEach((trigger) => trigger.kill());
       progress.kill();
     };
   }, []);

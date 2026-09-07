@@ -78,6 +78,12 @@ export function CommandPalette() {
 
   const activeIndex = Math.min(highlight, Math.max(results.length - 1, 0));
 
+  // Keyboard navigation moves `highlight`, but the list can scroll out of
+  // view — keep the active row visible without jumping the whole list.
+  useEffect(() => {
+    containerRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
   // Open/close side effects on external systems: focus, Lenis scroll lock,
   // restoring focus, and the entrance tween. No React state changes here.
   useEffect(() => {
@@ -112,13 +118,25 @@ export function CommandPalette() {
 
   if (!paletteOpen) return null;
 
-  const runCommand = (command: ProtoCommand) => {
-    if (command.kind === "shell") {
-      ctx.runShellCommand?.(command.label[ctx.locale]);
-    } else {
-      command.run(ctx);
-    }
+  // Lenis is still stopped (open-effect called `setScrollLocked(true)`) and
+  // ignores `scrollTo` while stopped, so unlock before running the action,
+  // not after — the cleanup's later call becomes an idempotent no-op. Every
+  // palette path that executes something and dismisses the palette goes
+  // through this one sequence.
+  const executeAndClose = (run: () => void) => {
+    setScrollLocked(false);
+    run();
     closePalette();
+  };
+
+  const runCommand = (command: ProtoCommand) => {
+    executeAndClose(() => {
+      if (command.kind === "shell") {
+        ctx.runShellCommand?.(command.label[ctx.locale]);
+      } else {
+        command.run(ctx);
+      }
+    });
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -145,8 +163,7 @@ export function CommandPalette() {
       } else if (query.trim()) {
         // Nothing matched visibly — allow an exact hidden-command literal
         // (e.g. "matrix") to still run, same as typing it in the shell.
-        ctx.runShellCommand?.(query.trim());
-        closePalette();
+        executeAndClose(() => ctx.runShellCommand?.(query.trim()));
       }
     }
   };
@@ -162,6 +179,7 @@ export function CommandPalette() {
         <button
           type="button"
           className={index === activeIndex ? "proto-cmdk-row is-active" : "proto-cmdk-row"}
+          data-active={index === activeIndex}
           onMouseEnter={() => setHighlight(index)}
           onClick={() => runCommand(command)}
         >
