@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Alejandro Padilla",
-  role: "Full-Stack Developer · Python & TypeScript",
+  role: "Full-Stack Developer",
   location: "Ecuador / Remote",
   email: "alejandro.padilla@unl.edu.ec",
   emailHref:

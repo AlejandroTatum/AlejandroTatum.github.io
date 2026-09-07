@@ -14,7 +14,7 @@ export const copy = {
     hero: {
       titleFirst: "Alejandro",
       titleLast: "Padilla",
-      role: "Full-Stack Developer · Python & TypeScript",
+      role: "Full-Stack Developer",
       description:
         "I build and run full-stack systems: FastAPI and Next.js services on PostgreSQL, shipped with Docker, and LLM automation where it cuts real manual work.",
       viewProjects: "View Projects",
@@ -89,7 +89,7 @@ export const copy = {
     hero: {
       titleFirst: "Alejandro",
       titleLast: "Padilla",
-      role: "Desarrollador Full-Stack · Python y TypeScript",
+      role: "Desarrollador Full-Stack",
       description:
         "Construyo y opero sistemas full-stack: servicios FastAPI y Next.js sobre PostgreSQL, desplegados con Docker, y automatización con LLM donde recorta trabajo manual real.",
       viewProjects: "Ver proyectos",

@@ -70,7 +70,7 @@ const sectionCommands: ProtoCommand[] = PROTO_SECTIONS.map((section, index) => {
 const shellOutput = {
   en: {
     whoami:
-      "alejandro padilla — full-stack developer · python & typescript · applied ai · open to part-time / contract",
+      "alejandro padilla — full-stack developer · applied ai · open to part-time / contract",
     stack:
       "gentle-ai at the core + 8 branches: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (run `open ~/stack` above)",
     projects: "2 in production, 1 launching, 6 in .archive — run `ls -a ~/projects` for everything",
@@ -80,7 +80,7 @@ const shellOutput = {
   },
   es: {
     whoami:
-      "alejandro padilla — desarrollador full-stack · python y typescript · ia aplicada · disponible part-time / contrato",
+      "alejandro padilla — desarrollador full-stack · ia aplicada · disponible part-time / contrato",
     stack:
       "gentle-ai en el núcleo + 8 ramas: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (ejecuta `open ~/stack` arriba)",
     projects: "2 en producción, 1 por publicar, 6 en .archive — ejecuta `ls -a ~/proyectos` para ver todo",
@@ -110,8 +110,8 @@ function lsOutput(locale: Locale): string {
 // ContactPrompt.tsx — sections.tsx already imports ContactPrompt, which
 // imports this module).
 const SECTION_ABOUT_LEDE: Record<Locale, string> = {
-  en: "Computer Science student at Universidad Nacional de Loja (Ecuador), with client work in production before graduating.",
-  es: "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador), con trabajo de clientes en producción desde antes de graduarme.",
+  en: "Computer Science student at Universidad Nacional de Loja (Ecuador).",
+  es: "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador).",
 };
 
 /** `cat about.md` output — the about lede plus the "how I work" row. */
@@ -127,10 +127,8 @@ const shellCommands: ProtoCommand[] = [
     label: { en: "help", es: "help" },
     hint: { en: "list available commands", es: "lista los comandos disponibles" },
     keywords: ["help"],
-    run: (ctx) => {
-      const rows = COMMANDS.filter(isShellHelpCommand);
-      return rows.map((row) => `  ${row.label[ctx.locale].padEnd(20)} ${row.hint[ctx.locale]}`).join("\n");
-    },
+    run: (ctx) =>
+      SHELL_HELP_ROWS.map((row) => `  ${row.label[ctx.locale].padEnd(20)} ${row.hint[ctx.locale]}`).join("\n"),
   },
   {
     id: "shell-whoami",
@@ -360,6 +358,43 @@ export const COMMANDS: ProtoCommand[] = [
   ...toggleCommands,
   ...linkCommands,
   ...hiddenCommands,
+];
+
+/** Row shape shared by the curated `help` overview and the cheat-sheet
+    card — a subset of ProtoCommand's fields, since the synthetic "open
+    <project>" row below isn't a runnable registry entry. */
+type HelpRow = Pick<ProtoCommand, "id" | "label" | "hint">;
+
+function commandById(id: string): ProtoCommand {
+  const command = COMMANDS.find((candidate) => candidate.id === id);
+  if (!command) throw new Error(`Unknown command id in SHELL_HELP_ROWS: ${id}`);
+  return command;
+}
+
+/** Placeholder row documenting `open cataclub` / `open elhornodelpinguino` /
+    `open yololab` as a single line — the three commands stay individually
+    typable and listed in the palette and `help --all`; only the curated
+    overview below collapses them into one row. */
+const HELP_OPEN_ROW: HelpRow = {
+  id: "help-open-project",
+  label: { en: "open <project>", es: "open <proyecto>" },
+  hint: { en: "cataclub · elhornodelpinguino · yololab", es: "cataclub · elhornodelpinguino · yololab" },
+};
+
+/** The curated 8-row overview shown by plain `help` and the cheat-sheet
+    card, in this exact order — resolved once here so both consumers can
+    never drift. Every other typable command (stack, ls, cat about.md, lang,
+    crt) stays out of this list but still works in the palette and
+    `help --all`. */
+export const SHELL_HELP_ROWS: HelpRow[] = [
+  commandById("shell-help"),
+  commandById("shell-whoami"),
+  commandById("shell-projects"),
+  HELP_OPEN_ROW,
+  commandById("shell-contact"),
+  commandById("shell-sudo-hire-me"),
+  commandById("shell-neofetch"),
+  commandById("shell-clear"),
 ];
 
 /** Text shown by the guest shell for an unknown command, with or without a

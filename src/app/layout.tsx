@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alejandro Padilla · Full-Stack Developer — Python, TypeScript & Applied AI",
+  title: "Alejandro Padilla · Full-Stack Developer",
   description:
     "Full-stack developer in Ecuador building FastAPI and Next.js systems on PostgreSQL, with LLM automation and computer vision where they remove real work. Open to part-time and contract roles, remote with US-timezone overlap.",
   keywords: [

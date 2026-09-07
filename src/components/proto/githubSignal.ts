@@ -13,6 +13,11 @@ export type GithubSignalData = {
 
 type GithubEvent = { type?: string; created_at?: string };
 
+/** Collapses concurrent callers (hero status line + about's GithubSignal) into
+    one network request per page load — cleared once it settles so a later
+    call past the cache TTL fetches fresh data again. */
+let inFlightRequest: Promise<GithubSignalData | null> | null = null;
+
 function readCache(): GithubSignalData | null {
   try {
     const raw = sessionStorage.getItem(CACHE_KEY);
@@ -40,10 +45,7 @@ function writeCache(data: GithubSignalData): void {
  * failure (rate limit, offline, malformed payload) — the caller renders
  * nothing in that case.
  */
-export async function fetchGithubSignal(): Promise<GithubSignalData | null> {
-  const cached = readCache();
-  if (cached) return cached;
-
+async function requestGithubSignal(): Promise<GithubSignalData | null> {
   try {
     const [userRes, eventsRes] = await Promise.all([
       fetch(`https://api.github.com/users/${GITHUB_USER}`),
@@ -69,6 +71,18 @@ export async function fetchGithubSignal(): Promise<GithubSignalData | null> {
   } catch {
     return null;
   }
+}
+
+export async function fetchGithubSignal(): Promise<GithubSignalData | null> {
+  const cached = readCache();
+  if (cached) return cached;
+
+  if (!inFlightRequest) {
+    inFlightRequest = requestGithubSignal().finally(() => {
+      inFlightRequest = null;
+    });
+  }
+  return inFlightRequest;
 }
 
 /** Manual fallback for runtimes without `Intl.RelativeTimeFormat`. */

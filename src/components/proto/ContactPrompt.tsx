@@ -130,6 +130,15 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
   const [history, setHistory] = useState<string[]>([]);
   const historyIndexRef = useRef<number | null>(null);
   const draftRef = useRef("");
+  const outputRef = useRef<HTMLDivElement>(null);
+
+  // Newest lines render at the bottom, like a real terminal — keep the
+  // scrollable output pinned there whenever a command appends new lines.
+  useEffect(() => {
+    const el = outputRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [lines]);
 
   const run = (raw: string) => {
     const cmd = raw.trim();
@@ -257,8 +266,8 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
   };
 
   return (
-    <div>
-      <div className="proto-term-out" aria-live="polite" aria-label="terminal output">
+    <div className="proto-term-shell">
+      <div className="proto-term-out" ref={outputRef} aria-live="polite" aria-label="terminal output">
         {lines.map((line, index) => (
           <div key={`${index}-${line.text}`} className={`term-line is-${line.kind}`}>
             {line.kind === "in" ? <span className="cmd-prompt">❯</span> : null}

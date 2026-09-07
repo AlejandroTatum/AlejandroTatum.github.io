@@ -566,6 +566,7 @@
 }
 
 .proto-hero-name {
+  position: relative;
   font-family: var(--tpixel);
   font-weight: 400;
   font-size: clamp(1.35rem, 4.4vw, 2.6rem);
@@ -573,10 +574,31 @@
   letter-spacing: 0.01em;
   color: var(--ttext);
   margin: 0.35rem 0 0;
+  /* Parked "unpainted" until the power-on sequence raster-reveals it. Text
+     stays in the DOM and readable by assistive tech the whole time — only
+     the paint is clipped. */
+  clip-path: inset(0 0 100% 0);
+}
+
+.proto-hero-name.is-decoded {
+  clip-path: inset(0 0 0% 0);
 }
 
 .proto-hero-name .accent {
   color: var(--trose);
+}
+
+/* CRT scanline that sweeps down with the name's raster reveal. */
+.proto-hero-name-scan {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: 0;
+  height: 2px;
+  background: var(--trose-soft);
+  box-shadow: 0 0 6px 2px var(--trose-soft);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .proto-hero-role {
@@ -704,6 +726,52 @@
   background: rgba(255, 158, 199, 0.08);
 }
 
+/* live status line — tmux-style bar under the CTAs, left group and right
+   group instead of one run of text, so a separator can never start a
+   wrapped line. */
+.proto-hero-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  row-gap: 0.2rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--tborder);
+  border-radius: 4px;
+  background: var(--tpanel);
+  color: var(--tdim);
+  font-family: var(--tmono);
+  font-size: 0.78rem;
+}
+
+.proto-hero-status-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.proto-hero-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tgreen);
+  flex: none;
+  align-self: center;
+  animation: proto-blink 1.2s steps(2, jump-none) infinite;
+}
+
+.proto-hero-status-segment {
+  white-space: nowrap;
+}
+
+.proto-hero-status-sep {
+  color: var(--tfaint);
+}
+
 /* portrait window */
 
 .proto-portrait-frame {
@@ -721,6 +789,26 @@
   object-position: center 30%;
   image-rendering: pixelated;
   background: #0d0a11;
+  /* Parked "undecoded" until the tile overlay fades and reveals it. */
+  filter: blur(6px) saturate(0) contrast(1.3);
+}
+
+.proto-portrait-frame.is-decoded .proto-portrait-img {
+  filter: none;
+}
+
+/* 12×12 color-tile overlay standing in for the portrait until it decodes. */
+.proto-portrait-tiles {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  pointer-events: none;
+}
+
+.proto-portrait-frame.is-decoded .proto-portrait-tiles {
+  display: none;
 }
 
 /* Viewfinder corners: the pixel viewer is "live". */
@@ -1586,7 +1674,52 @@
 @media (min-width: 900px) {
   .proto-contact-grid {
     grid-template-columns: 0.85fr 1.15fr;
-    align-items: start;
+    /* Stretch so the terminal card matches the cheat-sheet card's height
+       instead of growing past it — the shell scrolls internally instead. */
+    align-items: stretch;
+  }
+
+  .proto-guide-card {
+    display: flex;
+  }
+
+  .proto-guide-card .tui-window {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+  }
+
+  /* The terminal card must contribute nothing to the grid row's auto
+     height, or its own output would still drive the row taller (stretch
+     alone isn't enough — the row track is sized by the max-content of
+     BOTH cells). Taking the .tui-window out of flow with `position:
+     absolute; inset: 0` inside a `position: relative; min-height: 0`
+     card makes the cheat-sheet card the sole height source; the stretched
+     card then gives the absolutely positioned window its exact box. */
+  .proto-term-card {
+    position: relative;
+    min-height: 0;
+  }
+
+  .proto-term-card .tui-window {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .proto-term-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .proto-term-body .proto-term-shell {
+    flex: 1;
+    min-height: 0;
   }
 }
 
@@ -1631,11 +1764,31 @@
 
 /* interactive prompt */
 
+.proto-term-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Scrolls internally, newest line at the bottom, capped so the card never
+   grows past the sibling cheat-sheet card on the desktop two-column layout
+   (see .proto-term-body above) — the floor keeps it usable when that card
+   is short. */
 .proto-term-out {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.3rem;
-  min-height: 3.2rem;
+  min-height: 14rem;
   font-size: 0.86rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@media (max-width: 899px) {
+  .proto-term-out {
+    flex: none;
+    max-height: 50dvh;
+  }
 }
 
 .term-line {
@@ -1665,6 +1818,7 @@
 
 .proto-term-input-row {
   display: flex;
+  flex: none;
   align-items: baseline;
   gap: 0.55rem;
   margin-top: 0.9rem;
@@ -1883,6 +2037,27 @@
   }
 
   .proto-archive {
+    animation: none;
+  }
+
+  /* Hero power-on sequence: land directly on the final, fully-decoded frame. */
+  .proto-hero-name {
+    clip-path: inset(0 0 0% 0);
+  }
+
+  .proto-hero-name-scan {
+    display: none;
+  }
+
+  .proto-portrait-img {
+    filter: none;
+  }
+
+  .proto-portrait-tiles {
+    display: none;
+  }
+
+  .proto-hero-status-dot {
     animation: none;
   }
 }

@@ -50,8 +50,9 @@ import { siteConfig } from "@/lib/constants";
 import { bindTerminalReveals, typeInto } from "@/components/proto/terminal";
 import { TerminalWindow } from "@/components/proto/TerminalWindow";
 import { ContactPrompt } from "@/components/proto/ContactPrompt";
-import { COMMANDS, isShellHelpCommand } from "@/components/proto/commands";
+import { SHELL_HELP_ROWS } from "@/components/proto/commands";
 import { GithubSignal } from "@/components/proto/GithubSignal";
+import { HeroStatusLine } from "@/components/proto/HeroStatusLine";
 import { useProtoContext } from "@/components/proto/ProtoContext";
 
 /* ------------------------------------------------------------------ */
@@ -74,11 +75,13 @@ const uiCopy = {
       { key: "ai", value: "LLM · agents · YOLO" },
       { key: "base", value: "Ecuador · remote · US hours" },
     ],
+    heroStatusOnline: "online",
+    heroStatusCommit: (relative: string) => `last commit: ${relative}`,
+    heroStatusProduction: "2 sites in production · 1 launching",
     aboutCmd: "cat about.md",
     aboutComment: "# trajectory",
     aboutTitle: "about.md — read-only",
-    aboutLede:
-      "Computer Science student at Universidad Nacional de Loja (Ecuador), with client work in production before graduating.",
+    aboutLede: "Computer Science student at Universidad Nacional de Loja (Ecuador).",
     aboutChips: ["cs student @ UNL", "es native · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# visual mode",
@@ -94,7 +97,7 @@ const uiCopy = {
     visitSite: "open elhornodelpinguino.com",
     draftBadge: "final review",
     cataclubDesc:
-      "Website for CATA CLUB, Loja's table tennis club: schedules, fees, gallery and a members' area. Next.js frontend over a FastAPI and PostgreSQL API. Launching at cataclub.com.",
+      "CATA CLUB, Loja's table tennis club, needed one place where members and new players could find schedules, fees and a gallery. The site solves it with a public site and a private members' area with login. Launching at cataclub.com.",
     cataclubCtx: "Client project",
     cataclubStatus: "launching at cataclub.com",
     cataclubPreview: "cataclub.com — launching soon",
@@ -139,11 +142,13 @@ const uiCopy = {
       { key: "ia", value: "LLM · agentes · YOLO" },
       { key: "base", value: "Ecuador · remoto · horario EE. UU." },
     ],
+    heroStatusOnline: "en línea",
+    heroStatusCommit: (relative: string) => `último commit: ${relative}`,
+    heroStatusProduction: "2 sitios en producción · 1 por publicar",
     aboutCmd: "cat sobre-mi.md",
     aboutComment: "# trayectoria",
     aboutTitle: "sobre-mi.md — solo lectura",
-    aboutLede:
-      "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador), con trabajo de clientes en producción desde antes de graduarme.",
+    aboutLede: "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador).",
     aboutChips: ["cs @ UNL", "es nativo · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# modo visual",
@@ -159,7 +164,7 @@ const uiCopy = {
     visitSite: "abrir elhornodelpinguino.com",
     draftBadge: "revisión final",
     cataclubDesc:
-      "Sitio para CATA CLUB, el club de tenis de mesa de Loja: horarios, cuotas, galería y área de socios. Frontend en Next.js sobre una API en FastAPI y PostgreSQL. Se publica en cataclub.com.",
+      "CATA CLUB, el club de tenis de mesa de Loja, necesitaba un solo lugar donde socios y nuevos jugadores encontraran horarios, cuotas y galería. El sitio lo resuelve con un sitio público y un área privada de socios con inicio de sesión. Se publica en cataclub.com.",
     cataclubCtx: "Proyecto de cliente",
     cataclubStatus: "se publica en cataclub.com",
     cataclubPreview: "cataclub.com — próximamente",
@@ -293,6 +298,24 @@ function useSectionReveals(locale: Locale) {
 /* 0 · whoami                                                          */
 /* ------------------------------------------------------------------ */
 
+/** Plays once per page load: `<main key={locale}>` remounts the hero on every
+    language switch, but the power-on sequence itself should only ever run
+    the first time the boot overlay hands off. Module scope survives that
+    remount (it only resets on a real page load), so later mounts read it
+    straight away and render the finished frame with no tween. */
+let heroIntroPlayed = false;
+
+const PORTRAIT_TILE_TOKENS = ["--trose", "--tpurple", "--tcyan", "--tgreen", "--tpeach", "--tbg"] as const;
+const PORTRAIT_TILE_COUNT = 144;
+
+/** Deterministic pseudo-random tile colors (12×12 grid): a fixed hash of the
+    index, never `Math.random()`, so server and client render the exact same
+    markup and hydration never mismatches. */
+const PORTRAIT_TILES: string[] = Array.from({ length: PORTRAIT_TILE_COUNT }, (_, index) => {
+  const hash = (index * 2654435761) >>> 0;
+  return PORTRAIT_TILE_TOKENS[hash % PORTRAIT_TILE_TOKENS.length];
+});
+
 function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
   const t = copy[locale].hero;
   const ui = uiCopy[locale];
@@ -305,35 +328,102 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
 
       const typedEls = gsap.utils.toArray<HTMLElement>("[data-typed]", section);
       const finalTexts = typedEls.map((el) => el.dataset.typedText ?? el.textContent ?? "");
-      const rises = gsap.utils.toArray<HTMLElement>("[data-rise]", section);
+      const fadeGroup = gsap.utils.toArray<HTMLElement>("[data-hero-fade]", section);
+      const sysinfoRows = gsap.utils.toArray<HTMLElement>(".sysinfo-row", section);
+      const ctaRow = section.querySelector<HTMLElement>("[data-hero-cta]");
+      const statusLine = section.querySelector<HTMLElement>("[data-hero-status]");
+      const parkTargets = [...fadeGroup, ...sysinfoRows, ctaRow, statusLine].filter(
+        (el): el is HTMLElement => Boolean(el),
+      );
 
       if (!booted) {
-        // Parked invisible while the boot overlay plays.
-        gsap.set(rises, { autoAlpha: 0, y: 18 });
+        // Parked invisible while the boot overlay plays. The hero name and
+        // portrait park themselves via plain CSS defaults (clip-path /
+        // filter), so only the plain fade groups need JS here.
+        gsap.set(parkTargets, { autoAlpha: 0, y: 18 });
         typedEls.forEach((el) => {
           el.textContent = "";
         });
         return;
       }
 
-      const tl = gsap.timeline({ delay: 0.15 });
-      typedEls.forEach((el, index) => {
-        tl.add(typeInto(el, finalTexts[index], 0.7), index * 0.5);
-      });
-      tl.from(rises, {
-        y: 18,
-        autoAlpha: 0,
-        duration: 0.5,
-        ease: PIXEL_EASE,
-        stagger: 0.08,
-      }, 0.35);
-
-      // Portrait drifts slower than the scroll while the hero leaves.
+      // Portrait drifts slower than the scroll while the hero leaves — wired
+      // on every boot regardless of whether the intro still needs to play.
       gsap.to("[data-portrait]", {
         y: 48,
         ease: "none",
         scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: true },
       });
+
+      if (heroIntroPlayed) return;
+
+      const nameEl = section.querySelector<HTMLElement>("[data-hero-name]");
+      const scanEl = section.querySelector<HTMLElement>("[data-hero-scan]");
+      const tiles = gsap.utils.toArray<HTMLElement>("[data-portrait-tile]", section);
+      const portraitImg = section.querySelector<HTMLElement>("[data-portrait-img]");
+      const tileWrap = section.querySelector<HTMLElement>("[data-portrait-tiles]");
+
+      // ~1.6s power-on sequence: command types, the name raster-paints top to
+      // bottom, the portrait decodes from color tiles, sysinfo prints line by
+      // line, then the CTAs and the live status line settle in.
+      const tl = gsap.timeline({
+        onComplete: () => {
+          heroIntroPlayed = true;
+        },
+      });
+
+      typedEls.forEach((el, index) => {
+        tl.add(typeInto(el, finalTexts[index], 0.5), 0);
+      });
+
+      if (nameEl) {
+        tl.fromTo(
+          nameEl,
+          { clipPath: "inset(0 0 100% 0)" },
+          { clipPath: "inset(0 0 0% 0)", duration: 0.55, ease: "steps(14)" },
+          0.15,
+        );
+      }
+      if (scanEl) {
+        tl.fromTo(
+          scanEl,
+          { top: "0%", autoAlpha: 1 },
+          { top: "100%", autoAlpha: 0, duration: 0.57, ease: "none" },
+          0.15,
+        );
+      }
+
+      if (tiles.length) {
+        tl.to(tiles, { autoAlpha: 0, duration: 0.18, stagger: { each: 0.0035, from: "random" } }, 0.4);
+      }
+      if (portraitImg) {
+        tl.fromTo(
+          portraitImg,
+          { filter: "blur(6px) saturate(0) contrast(1.3)" },
+          { filter: "blur(0px) saturate(1) contrast(1)", duration: 0.7, ease: PIXEL_EASE },
+          0.4,
+        );
+      }
+      if (tileWrap) {
+        tl.set(tileWrap, { display: "none" }, 1.12);
+      }
+
+      if (fadeGroup.length) {
+        tl.from(fadeGroup, { autoAlpha: 0, y: 10, duration: 0.3, ease: PIXEL_EASE }, 0.9);
+      }
+      if (sysinfoRows.length) {
+        tl.from(
+          sysinfoRows,
+          { x: -6, autoAlpha: 0, duration: 0.22, ease: "steps(4)", stagger: 0.1 },
+          0.95,
+        );
+      }
+      if (ctaRow) {
+        tl.from(ctaRow, { autoAlpha: 0, duration: 0.2, ease: PIXEL_EASE }, 1.25);
+      }
+      if (statusLine) {
+        tl.from(statusLine, { y: 6, autoAlpha: 0, duration: 0.3, ease: PIXEL_EASE }, 1.35);
+      }
 
       return () => {
         typedEls.forEach((el, index) => {
@@ -344,24 +434,27 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
     { scope: sectionRef, dependencies: [booted, locale], revertOnUpdate: true },
   );
 
+  const introDone = heroIntroPlayed;
+
   return (
     <section ref={sectionRef} id="whoami" data-proto-section="whoami" className="proto-section">
       <CommandLine cmd={ui.heroCmd} comment={ui.heroComment} />
       <div className="proto-hero-grid">
         <div>
-          <h1 className="proto-hero-name" data-rise>
+          <h1 className={introDone ? "proto-hero-name is-decoded" : "proto-hero-name"} data-hero-name>
+            <span className="proto-hero-name-scan" data-hero-scan aria-hidden="true" />
             Alejandro <span className="accent">Padilla</span>
           </h1>
-          <p className="proto-hero-role" data-rise>
+          <p className="proto-hero-role" data-hero-fade>
             {t.role}
           </p>
-          <p className="proto-hero-headline" data-rise>
+          <p className="proto-hero-headline" data-hero-fade>
             {ui.heroHeadline}
           </p>
-          <p className="proto-hero-desc" data-rise>
+          <p className="proto-hero-desc" data-hero-fade>
             {ui.heroShort}
           </p>
-          <div className="proto-sysinfo" data-rise>
+          <div className="proto-sysinfo">
             {ui.sysinfo.map((row) => (
               <div key={row.key} className="sysinfo-row">
                 <span className="sysinfo-key">{row.key}</span>
@@ -376,7 +469,7 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
               </span>
             </div>
           </div>
-          <div className="proto-cta-row" data-rise>
+          <div className="proto-cta-row" data-hero-cta>
             <a className="bracket-btn" href="#projects">
               <span className="bracket">[</span> {ui.ctaProjects} <span className="bracket">]</span>
             </a>
@@ -402,9 +495,15 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
               <FaLinkedinIn aria-hidden="true" />
             </a>
           </div>
+          <HeroStatusLine
+            locale={locale}
+            onlineLabel={ui.heroStatusOnline}
+            commitLabel={ui.heroStatusCommit}
+            productionLabel={ui.heroStatusProduction}
+          />
         </div>
 
-        <div data-rise>
+        <div>
           <div data-portrait>
             <TerminalWindow
               title={
@@ -414,7 +513,7 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
                 </>
               }
             >
-              <div className="proto-portrait-frame">
+              <div className={introDone ? "proto-portrait-frame is-decoded" : "proto-portrait-frame"}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/pixel/alejandro-pixel-portrait-900.png"
@@ -425,7 +524,17 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
                   fetchPriority="high"
                   alt={t.heroImageAlt}
                   className="proto-portrait-img"
+                  data-portrait-img
                 />
+                <div
+                  className={introDone ? "proto-portrait-tiles is-decoded" : "proto-portrait-tiles"}
+                  data-portrait-tiles
+                  aria-hidden="true"
+                >
+                  {PORTRAIT_TILES.map((tileToken, index) => (
+                    <span key={index} data-portrait-tile style={{ background: `var(${tileToken})` }} />
+                  ))}
+                </div>
                 <div className="proto-scan-corners" aria-hidden="true">
                   <span />
                   <span />
@@ -1030,10 +1139,10 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 /* 4 · ssh guest@alejandro — the interactive guest shell                */
 /* ------------------------------------------------------------------ */
 
-/** The cheat sheet reads straight off the shared registry — shell-kind,
-    non-hidden commands, in registry order — so it can never drift from the
-    guest shell's real command set. */
-const GUIDE_COMMANDS = COMMANDS.filter(isShellHelpCommand);
+/** The cheat sheet reads straight off the shared curated overview — the
+    same 8 rows plain `help` prints — so it can never drift from the guest
+    shell's real command set. */
+const GUIDE_COMMANDS = SHELL_HELP_ROWS;
 
 function TerminalSection({ locale }: { locale: Locale }) {
   const ui = uiCopy[locale];
@@ -1044,7 +1153,7 @@ function TerminalSection({ locale }: { locale: Locale }) {
     <section ref={sectionRef} id="terminal" data-proto-section="terminal" className="proto-section">
       <CommandLine cmd={ui.terminalCmd} comment={ui.terminalComment} />
       <div className="proto-contact-grid">
-        <div data-rise>
+        <div className="proto-guide-card" data-rise>
           <TerminalWindow title={ui.guideTitle} animated>
             <div className="tui-body">
               <div className="proto-guide-list">
@@ -1067,9 +1176,9 @@ function TerminalSection({ locale }: { locale: Locale }) {
             </div>
           </TerminalWindow>
         </div>
-        <div data-rise>
+        <div className="proto-term-card" data-rise>
           <TerminalWindow title={ui.terminalTitle} animated>
-            <div className="tui-body">
+            <div className="tui-body proto-term-body">
               <ContactPrompt locale={locale} />
             </div>
           </TerminalWindow>
