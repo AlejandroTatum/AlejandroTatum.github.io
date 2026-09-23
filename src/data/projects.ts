@@ -1,10 +1,20 @@
 import type { Locale } from "@/lib/i18n";
 
-export type ProjectCategory = "production" | "academic";
+export type ProjectCategory = "production" | "academic" | "client";
+
+/** Evidence tier a visitor can verify right now. Every live/production
+    claim on the site (hero status line, shell output, about stats) is
+    derived from this field, so copy can never outrun the data. */
+export type ProjectProof =
+  | "client-live" // live client site on its own domain
+  | "public-demo" // publicly reachable demo, not a client production site
+  | "upcoming" // real client work, not yet publicly verifiable
+  | "open-source"; // public repository, no hosted instance claimed
 
 export type Project = {
   title: string;
   category: ProjectCategory;
+  proof: ProjectProof;
   /** Optional pixel-art preview illustration served from public/pixel/. */
   image?: string;
   demoUrl?: string;
@@ -18,8 +28,34 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    title: "cataclub",
+    category: "client",
+    proof: "upcoming",
+    description: {
+      en: "CATA CLUB, Loja's table tennis club, needed one place where members and new players could find schedules, fees and a gallery. The site solves it with a public site and a private members' area with login.",
+      es: "CATA CLUB, el club de tenis de mesa de Loja, necesitaba un solo lugar donde socios y nuevos jugadores encontraran horarios, cuotas y galería. El sitio lo resuelve con un sitio público y un área privada de socios con inicio de sesión.",
+    },
+    context: { en: "Client project", es: "Proyecto de cliente" },
+    status: {
+      en: "In development · not yet public",
+      es: "En desarrollo · aún no público",
+    },
+    tags: ["Next.js", "FastAPI", "PostgreSQL"],
+    highlights: {
+      en: [
+        "Public site plus a private members' area with login.",
+        "One place for schedules, fees and a gallery.",
+      ],
+      es: [
+        "Sitio público más un área privada de socios con inicio de sesión.",
+        "Un solo lugar con horarios, cuotas y galería.",
+      ],
+    },
+  },
+  {
     title: "YOLO Complexity Lab",
     category: "production",
+    proof: "public-demo",
     image: "/pixel/project-yolo-pixel.png",
     demoUrl: "https://yololab.streamlit.app/",
     sourceUrl: "https://github.com/AlejandroTatum/yolo-complexity-lab",
@@ -52,6 +88,7 @@ export const projects: Project[] = [
   {
     title: "El Horno del Pingüino",
     category: "production",
+    proof: "client-live",
     image: "/pixel/project-horno-pixel.png",
     demoUrl: "https://elhornodelpinguino.com/",
     description: {
@@ -83,6 +120,7 @@ export const projects: Project[] = [
   {
     title: "academic-report-automation",
     category: "academic",
+    proof: "open-source",
     image: "/pixel/project-reports-pixel.png",
     sourceUrl: "https://github.com/AlejandroTatum/academic-report-automation",
     description: {
@@ -108,6 +146,7 @@ export const projects: Project[] = [
   {
     title: "AlejandroTatum.github.io",
     category: "academic",
+    proof: "open-source",
     image: "/pixel/project-portfolio-pixel.png",
     sourceUrl: "https://github.com/AlejandroTatum/AlejandroTatum.github.io",
     description: {
@@ -133,6 +172,7 @@ export const projects: Project[] = [
   {
     title: "hospital-appointment-inventory",
     category: "academic",
+    proof: "open-source",
     sourceUrl: "https://github.com/AlejandroTatum/hospital-appointment-inventory",
     description: {
       en: "Documented Java CLI that models appointment, patient and inventory workflows over hospital-style CSV datasets.",
@@ -165,6 +205,7 @@ export const projects: Project[] = [
   {
     title: "siged",
     category: "academic",
+    proof: "open-source",
     sourceUrl: "https://github.com/AlejandroTatum/siged",
     description: {
       en: "Coursework implementation of a SIGED-style school management system: Django backend and React client, built against a real reference system.",
@@ -189,6 +230,7 @@ export const projects: Project[] = [
   {
     title: "hmm-speech-recognition-research",
     category: "academic",
+    proof: "open-source",
     sourceUrl: "https://github.com/AlejandroTatum/hmm-speech-recognition-research",
     description: {
       en: "Literature review of HMM-based speech recognition and its evolution toward hybrid and deep models, typeset as a reproducible LaTeX document.",
@@ -216,6 +258,7 @@ export const projects: Project[] = [
   {
     title: "search-algorithms-java",
     category: "academic",
+    proof: "open-source",
     sourceUrl: "https://github.com/AlejandroTatum/search-algorithms-java",
     description: {
       en: "Java academic project implementing sequential and binary search over arrays and linked lists using CSV datasets.",

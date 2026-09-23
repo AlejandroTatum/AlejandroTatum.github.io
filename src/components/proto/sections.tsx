@@ -59,13 +59,40 @@ import { useProtoContext } from "@/components/proto/ProtoContext";
 /* shared bits                                                         */
 /* ------------------------------------------------------------------ */
 
+/** Live-proof counts derived from the project data — the single source the
+    hero status line and the about stats line read, so the wording can
+    never claim more than the data proves. */
+type ProofCounts = { clientLive: number; publicDemo: number; upcoming: number };
+
+const PROOF_COUNTS: ProofCounts = {
+  clientLive: projects.filter((p) => p.proof === "client-live").length,
+  publicDemo: projects.filter((p) => p.proof === "public-demo").length,
+  upcoming: projects.filter((p) => p.proof === "upcoming").length,
+};
+
+/** "1 client site live" / "3 client sites live" — singular-aware for both
+    locales so derived counts stay grammatical if the data grows. */
+function proofCountLabel(n: number, one: Record<Locale, string>, many: Record<Locale, string>, locale: Locale): string {
+  return `${n} ${(n === 1 ? one : many)[locale]}`;
+}
+
+/** Display host for a project link, derived from the data URL so the link
+    and its visible label can never drift apart. */
+function hostOf(url: string): string {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+
 const uiCopy = {
   en: {
     heroCmd: "whoami --verbose",
     heroComment: "# profile",
     heroHeadline: "From a business problem to a system in production.",
     heroShort:
-      "I design, build and run the whole piece: API, database, frontend and deployment. Live client sites and public code to prove it.",
+      "I design, build and run the whole piece: API, database, frontend and deployment. A live client site and public code to prove it.",
     ctaProjects: "./view-projects",
     ctaContact: "./contact",
     portraitTitle: "alejandro.png — pixel viewer",
@@ -77,7 +104,12 @@ const uiCopy = {
     ],
     heroStatusOnline: "online",
     heroStatusCommit: (relative: string) => `last commit: ${relative}`,
-    heroStatusProduction: "2 sites in production · 1 launching",
+    heroStatusProduction: (c: ProofCounts) =>
+      [
+        proofCountLabel(c.clientLive, { en: "client site live", es: "sitio de cliente en vivo" }, { en: "client sites live", es: "sitios de cliente en vivo" }, "en"),
+        proofCountLabel(c.publicDemo, { en: "public demo", es: "demo pública" }, { en: "public demos", es: "demo públicas" }, "en"),
+        `${c.upcoming} ${c.upcoming === 1 ? "client build in development" : "client builds in development"}`,
+      ].join(" · "),
     aboutCmd: "cat about.md",
     aboutComment: "# trajectory",
     aboutTitle: "about.md — read-only",
@@ -91,26 +123,20 @@ const uiCopy = {
     gentleName: "gentle-ai",
     gentleComment: "spec-driven dev workflow I use daily",
     projectsCmd: "ls ~/featured",
-    projectsComment: "# top 3 · production first",
+    projectsComment: "# top 3 · client work first",
     projectsTitle: "featured — top 3",
     topSub: "the three builds that best show what I ship",
-    visitSite: "open elhornodelpinguino.com",
-    draftBadge: "final review",
-    cataclubDesc:
-      "CATA CLUB, Loja's table tennis club, needed one place where members and new players could find schedules, fees and a gallery. The site solves it with a public site and a private members' area with login. Launching at cataclub.com.",
-    cataclubCtx: "Client project",
-    cataclubStatus: "launching at cataclub.com",
-    cataclubPreview: "cataclub.com — launching soon",
+    openSite: "open",
+    liveTag: "— live",
+    demoTag: "— demo",
+    wipBadge: "in development",
+    wipPreviewTitle: "cataclub — in development",
     cataclubImageAlt: "Preview of the CATA CLUB website under construction",
-    cataclubTags: ["Next.js", "FastAPI", "PostgreSQL"],
     hornoStatus: "live · client site",
-    hornoPreview: "elhornodelpinguino.com — live",
     hornoImageAlt: "Preview of the El Horno del Pingüino website",
-    visitYolo: "open yololab.streamlit.app",
     openSourceTag: "open source",
     sourceLink: "source → github",
     uniBadge: "university work",
-    yoloPreviewTitle: "yololab.streamlit.app — demo",
     yoloPreviewAlt: "Preview of the YOLO Complexity Lab web app",
     archiveHint: (count: number) => `# ${count} more entries — for the curious`,
     revealLabel: "ls -a ~/projects",
@@ -132,7 +158,7 @@ const uiCopy = {
     heroComment: "# perfil",
     heroHeadline: "De un problema de negocio a un sistema en producción.",
     heroShort:
-      "Diseño, construyo y opero la pieza completa: API, base de datos, frontend y despliegue. Sitios de clientes en vivo y código público para comprobarlo.",
+      "Diseño, construyo y opero la pieza completa: API, base de datos, frontend y despliegue. Un sitio de cliente en vivo y código público para comprobarlo.",
     ctaProjects: "./ver-proyectos",
     ctaContact: "./contacto",
     portraitTitle: "alejandro.png — visor de píxeles",
@@ -144,7 +170,12 @@ const uiCopy = {
     ],
     heroStatusOnline: "en línea",
     heroStatusCommit: (relative: string) => `último commit: ${relative}`,
-    heroStatusProduction: "2 sitios en producción · 1 por publicar",
+    heroStatusProduction: (c: ProofCounts) =>
+      [
+        proofCountLabel(c.clientLive, { en: "client site live", es: "sitio de cliente en vivo" }, { en: "client sites live", es: "sitios de cliente en vivo" }, "es"),
+        proofCountLabel(c.publicDemo, { en: "public demo", es: "demo pública" }, { en: "public demos", es: "demo públicas" }, "es"),
+        `${c.upcoming} ${c.upcoming === 1 ? "desarrollo de cliente en curso" : "desarrollos de cliente en curso"}`,
+      ].join(" · "),
     aboutCmd: "cat sobre-mi.md",
     aboutComment: "# trayectoria",
     aboutTitle: "sobre-mi.md — solo lectura",
@@ -158,26 +189,20 @@ const uiCopy = {
     gentleName: "gentle-ai",
     gentleComment: "flujo spec-driven que uso a diario",
     projectsCmd: "ls ~/destacados",
-    projectsComment: "# top 3 · producción primero",
+    projectsComment: "# top 3 · trabajo de cliente primero",
     projectsTitle: "destacados — top 3",
     topSub: "los tres trabajos que mejor muestran lo que entrego",
-    visitSite: "abrir elhornodelpinguino.com",
-    draftBadge: "revisión final",
-    cataclubDesc:
-      "CATA CLUB, el club de tenis de mesa de Loja, necesitaba un solo lugar donde socios y nuevos jugadores encontraran horarios, cuotas y galería. El sitio lo resuelve con un sitio público y un área privada de socios con inicio de sesión. Se publica en cataclub.com.",
-    cataclubCtx: "Proyecto de cliente",
-    cataclubStatus: "se publica en cataclub.com",
-    cataclubPreview: "cataclub.com — próximamente",
+    openSite: "abrir",
+    liveTag: "— en vivo",
+    demoTag: "— demo",
+    wipBadge: "en desarrollo",
+    wipPreviewTitle: "cataclub — en desarrollo",
     cataclubImageAlt: "Vista previa del sitio de CATA CLUB en construcción",
-    cataclubTags: ["Next.js", "FastAPI", "PostgreSQL"],
     hornoStatus: "en vivo · sitio de cliente",
-    hornoPreview: "elhornodelpinguino.com — en vivo",
     hornoImageAlt: "Vista previa del sitio de El Horno del Pingüino",
-    visitYolo: "abrir yololab.streamlit.app",
     openSourceTag: "código abierto",
     sourceLink: "código → github",
     uniBadge: "trabajo universitario",
-    yoloPreviewTitle: "yololab.streamlit.app — demo",
     yoloPreviewAlt: "Vista previa de la app web YOLO Complexity Lab",
     archiveHint: (count: number) => `# ${count} entradas más — para los curiosos`,
     revealLabel: "ls -a ~/proyectos",
@@ -507,7 +532,7 @@ function HeroSection({ locale, booted }: { locale: Locale; booted: boolean }) {
             locale={locale}
             onlineLabel={ui.heroStatusOnline}
             commitLabel={ui.heroStatusCommit}
-            productionLabel={ui.heroStatusProduction}
+            productionLabel={ui.heroStatusProduction(PROOF_COUNTS)}
           />
         </div>
 
@@ -627,8 +652,16 @@ function AboutSection({ locale }: { locale: Locale }) {
     { scope: sectionRef, dependencies: [locale], revertOnUpdate: true },
   );
 
-  const productionCount = projects.filter((p) => p.category === "production").length;
-  const statsLine = `${projects.length} ${locale === "en" ? "projects" : "proyectos"} · ${STACK_TREE[1].items.length} ${locale === "en" ? "languages" : "lenguajes"} · ${productionCount} ${locale === "en" ? "in production" : "en producción"}`;
+  // Derived from the same proof data as the hero status line — one source
+  // of truth for every live/production claim on the page.
+  const clientLive = projects.filter((p) => p.proof === "client-live").length;
+  const publicDemo = projects.filter((p) => p.proof === "public-demo").length;
+  const statsLine = [
+    `${projects.length} ${locale === "en" ? "projects" : "proyectos"}`,
+    `${STACK_TREE[1].items.length} ${locale === "en" ? "languages" : "lenguajes"}`,
+    proofCountLabel(clientLive, { en: "client site live", es: "sitio de cliente en vivo" }, { en: "client sites live", es: "sitios de cliente en vivo" }, locale),
+    proofCountLabel(publicDemo, { en: "public demo", es: "demo pública" }, { en: "public demos", es: "demo públicas" }, locale),
+  ].join(" · ");
 
   return (
     <section ref={sectionRef} id="about" data-proto-section="about" className="proto-section">
@@ -940,11 +973,11 @@ function ProjectsSection({ locale }: { locale: Locale }) {
   const sectionRef = useSectionReveals(locale);
   const [showArchive, setShowArchive] = useState(false);
 
+  const cataclub = projects.find((p) => p.title === "cataclub");
   const horno = projects.find((p) => p.title === "El Horno del Pingüino");
   const yolo = projects.find((p) => p.title === "YOLO Complexity Lab");
-  const archive = projects.filter(
-    (p) => p.title !== "El Horno del Pingüino" && p.title !== "YOLO Complexity Lab",
-  );
+  const featured = [cataclub, horno, yolo].filter((p): p is Project => Boolean(p));
+  const archive = projects.filter((p) => !featured.some((f) => f.title === p.title));
 
   return (
     <section ref={sectionRef} id="projects" data-proto-section="projects" className="proto-section">
@@ -957,48 +990,53 @@ function ProjectsSection({ locale }: { locale: Locale }) {
             <span className="proto-top3-sub">{ui.topSub}</span>
           </div>
 
-          {/* 1 · cataclub — draft with staging preview */}
-          <article id="project-cataclub" className="proto-proj is-featured" data-rise>
-            <div className="proto-featured-info">
-              <div className="proto-proj-head">
-                <span className="proto-rank" style={{ "--rank": "#ff9ec7" } as CSSProperties}>
-                  01
-                </span>
-                <span className="proto-proj-name">▸ cataclub</span>
-                <span className="proto-draft-badge">{ui.draftBadge}</span>
-                <span className="proto-proj-ctx">{ui.cataclubCtx}</span>
-              </div>
-              <p className="proto-proj-desc">{ui.cataclubDesc}</p>
-              <span className="proto-proj-status">{ui.cataclubStatus}</span>
-              <div className="proto-proj-tags">
-                {ui.cataclubTags.map((tag) => (
-                  <span key={tag} className="proto-tag">
-                    {tag}
+          {/* 1 · cataclub — client build in development, not yet public.
+              All copy, tags and status come from the project data; no site
+              link is rendered because there is no public URL to verify. */}
+          {cataclub ? (
+            <article id="project-cataclub" className="proto-proj is-featured" data-rise>
+              <div className="proto-featured-info">
+                <div className="proto-proj-head">
+                  <span className="proto-rank" style={{ "--rank": "#ff9ec7" } as CSSProperties}>
+                    01
                   </span>
-                ))}
-              </div>
-            </div>
-            <div className="proto-featured-preview">
-              <TerminalWindow title={ui.cataclubPreview}>
-                <div className="proto-featured-frame">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/previews/cataclub-900.png"
-                    srcSet="/previews/cataclub-900.png 900w, /previews/cataclub.png 1440w"
-                    sizes="(max-width: 768px) 90vw, 440px"
-                    width={900}
-                    height={563}
-                    loading="lazy"
-                    decoding="async"
-                    alt={ui.cataclubImageAlt}
-                    className="proto-featured-img"
-                  />
+                  <span className="proto-proj-name">▸ {cataclub.title}</span>
+                  <span className="proto-draft-badge">{ui.wipBadge}</span>
+                  <span className="proto-proj-ctx">{cataclub.context[locale]}</span>
                 </div>
-              </TerminalWindow>
-            </div>
-          </article>
+                <p className="proto-proj-desc">{cataclub.description[locale]}</p>
+                <span className="proto-proj-status">{cataclub.status[locale]}</span>
+                <div className="proto-proj-tags">
+                  {cataclub.tags.map((tag) => (
+                    <span key={tag} className="proto-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="proto-featured-preview">
+                <TerminalWindow title={ui.wipPreviewTitle}>
+                  <div className="proto-featured-frame">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/previews/cataclub-900.png"
+                      srcSet="/previews/cataclub-900.png 900w, /previews/cataclub.png 1440w"
+                      sizes="(max-width: 768px) 90vw, 440px"
+                      width={900}
+                      height={563}
+                      loading="lazy"
+                      decoding="async"
+                      alt={ui.cataclubImageAlt}
+                      className="proto-featured-img"
+                    />
+                  </div>
+                </TerminalWindow>
+              </div>
+            </article>
+          ) : null}
 
-          {/* 2 · el horno del pingüino — live on its own domain, direct site button */}
+          {/* 2 · el horno del pingüino — live client site; the button and
+              preview title derive their host straight from the data URL */}
           {horno ? (
             <article id="project-elhornodelpinguino" className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
@@ -1022,15 +1060,16 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                 </div>
                 <a
                   className="bracket-btn proto-site-btn"
-                  href="https://elhornodelpinguino.com/"
+                  href={horno.demoUrl}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span className="bracket">[</span> {ui.visitSite} ↗ <span className="bracket">]</span>
+                  <span className="bracket">[</span> {ui.openSite} {horno.demoUrl ? hostOf(horno.demoUrl) : horno.title} ↗{" "}
+                  <span className="bracket">]</span>
                 </a>
               </div>
               <div className="proto-featured-preview">
-                <TerminalWindow title={ui.hornoPreview}>
+                <TerminalWindow title={`${horno.demoUrl ? hostOf(horno.demoUrl) : horno.title} ${ui.liveTag}`}>
                   <div className="proto-featured-frame">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -1050,7 +1089,8 @@ function ProjectsSection({ locale }: { locale: Locale }) {
             </article>
           ) : null}
 
-          {/* 3 · yolo complexity lab — public source, live streamlit demo */}
+          {/* 3 · yolo complexity lab — open source with a live public demo;
+              demo link and labels derive from the data URL */}
           {yolo ? (
             <article id="project-yololab" className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
@@ -1085,12 +1125,12 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <span className="bracket">[</span> {ui.visitYolo} ↗ <span className="bracket">]</span>
+                    <span className="bracket">[</span> {ui.openSite} {hostOf(yolo.demoUrl)} ↗ <span className="bracket">]</span>
                   </a>
                 ) : null}
               </div>
               <div className="proto-featured-preview">
-                <TerminalWindow title={ui.yoloPreviewTitle}>
+                <TerminalWindow title={`${yolo.demoUrl ? hostOf(yolo.demoUrl) : yolo.title} ${ui.demoTag}`}>
                   <div className="proto-featured-frame">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
