@@ -1195,6 +1195,31 @@ function ContactSection({ locale }: { locale: Locale }) {
   const t = copy[locale].contact;
   const ui = uiCopy[locale];
   const sectionRef = useSectionReveals(locale);
+  const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<number | null>(null);
+
+  // Clear the pending "copied ✓" reset when the section unmounts (locale
+  // swap remounts the tree).
+  useEffect(
+    () => () => {
+      if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+    },
+    [],
+  );
+
+  const copyEmail = () => {
+    navigator.clipboard
+      ?.writeText(siteConfig.email)
+      .then(() => {
+        setCopied(true);
+        if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+        copiedTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {
+        // Clipboard can be unavailable (permissions, insecure context) —
+        // the mailto link beside it stays the primary contact path.
+      });
+  };
 
   return (
     <section ref={sectionRef} id="contact" data-proto-section="contact" className="proto-section">
@@ -1203,10 +1228,23 @@ function ContactSection({ locale }: { locale: Locale }) {
         {t.description}
       </p>
       <div className="proto-contact-rows" data-rise>
-        <a className="proto-contact-row" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
+        {/* Same row visual as the other contacts, but the email itself is the
+            mailto link and a copy chip sits beside it — clipboard writes must
+            not be nested inside the anchor. */}
+        <div className="proto-contact-row">
           <span className="cmd-name">mail</span>
-          <span className="cmd-value">{siteConfig.email}</span>
-        </a>
+          <a className="cmd-value" href={siteConfig.emailHref}>
+            {siteConfig.email}
+          </a>
+          <button
+            type="button"
+            className="proto-chip-btn"
+            style={{ marginLeft: "auto", alignSelf: "center" }}
+            onClick={copyEmail}
+          >
+            {copied ? t.actions.copied : t.actions.copyEmail}
+          </button>
+        </div>
         <a className="proto-contact-row" href={siteConfig.github} target="_blank" rel="noreferrer">
           <span className="cmd-name">github</span>
           <span className="cmd-value">github.com/AlejandroTatum</span>

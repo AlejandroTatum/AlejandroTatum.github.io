@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { BootOverlay } from "@/components/proto/BootOverlay";
 import { Chrome, PROTO_SECTIONS } from "@/components/proto/Chrome";
 import { CommandPalette } from "@/components/proto/CommandPalette";
@@ -18,7 +18,14 @@ import {
 import { useProtoHotkeys } from "@/components/proto/useProtoHotkeys";
 import { useKonami } from "@/components/proto/useKonami";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
-import type { Locale } from "@/lib/i18n";
+import {
+  localeStore,
+  persistLocale,
+  readLocaleFromSearch,
+  readPersistedLocale,
+  syncLocaleQuery,
+  type Locale,
+} from "@/lib/i18n";
 
 function ProtoHotkeysAndOverlay({ booted, locale }: { booted: boolean; locale: Locale }) {
   const { shortcutsOpen, closeShortcuts } = useProtoHotkeys(booted);
@@ -43,7 +50,10 @@ function ChromeConnected(props: ChromeConnectedProps) {
 
 export default function ProtoPage() {
   // Spanish first: it is Alejandro's native language and the primary audience.
-  const [locale, setLocale] = useState<Locale>("es");
+  // useSyncExternalStore keeps the server snapshot at "es" (no hydration
+  // mismatch) while the client snapshot picks up deep links and the stored
+  // choice right after mount.
+  const locale = useSyncExternalStore(localeStore.subscribe, localeStore.get, localeStore.getServerSnapshot);
   const [booted, setBooted] = useState(false);
   const [crtOn, setCrtOn] = useState(true);
   const [overdrive, setOverdrive] = useState(false);
@@ -54,6 +64,17 @@ export default function ProtoPage() {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  // Language bootstrap: a ?lang= deep link wins over the persisted choice,
+  // which wins over the Spanish default.
+  useEffect(() => {
+    const fromQuery = readLocaleFromSearch(window.location.search);
+    const next = fromQuery ?? readPersistedLocale();
+    if (next) {
+      localeStore.set(next);
+      persistLocale(next);
+    }
+  }, []);
+
   // Keep overscroll behind the TUI dark (body is light for the pixel site).
   useEffect(() => {
     const previous = document.body.style.backgroundColor;
@@ -63,7 +84,12 @@ export default function ProtoPage() {
     };
   }, []);
 
-  const toggleLocale = () => setLocale((current) => (current === "en" ? "es" : "en"));
+  const toggleLocale = () => {
+    const next: Locale = locale === "en" ? "es" : "en";
+    localeStore.set(next);
+    persistLocale(next);
+    syncLocaleQuery(next);
+  };
 
   const toggleCrt = () => setCrtOn((current) => !current);
 

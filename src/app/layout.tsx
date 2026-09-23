@@ -49,9 +49,12 @@ export const viewport: Viewport = {
   themeColor: "#131017",
 };
 
+// Static export serves one HTML for both routes; Spanish is the root
+// route's rendered default, so lang must say "es". The pixel route (English
+// default) corrects document.documentElement.lang at runtime.
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${pressStart.variable} ${jetbrainsMono.variable}`}>
+    <html lang="es" className={`${pressStart.variable} ${jetbrainsMono.variable}`}>
       <body>{children}</body>
     </html>
   );

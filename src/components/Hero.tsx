@@ -98,7 +98,7 @@ export function Hero({ locale }: HeroProps) {
             <a className="btn-primary" href="#projects">
               {t.viewProjects}
             </a>
-            <a className="btn-secondary" href={siteConfig.emailHref} target="_blank" rel="noreferrer">
+            <a className="btn-secondary" href={siteConfig.emailHref}>
               {t.contactMe}
             </a>
             <a

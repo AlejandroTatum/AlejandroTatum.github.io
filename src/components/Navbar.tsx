@@ -71,8 +71,6 @@ export function Navbar({ locale, onToggleLocale }: NavbarProps) {
           <a
             className="btn-nav hidden sm:inline-flex"
             href={siteConfig.emailHref}
-            target="_blank"
-            rel="noreferrer"
           >
             {t.hire}
           </a>

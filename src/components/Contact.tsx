@@ -40,7 +40,7 @@ export function Contact({ locale }: ContactProps) {
           </div>
 
           <div className="contact-actions" data-reveal-stagger>
-            <a className="contact-action" data-reveal-item href={siteConfig.emailHref} target="_blank" rel="noreferrer">
+            <a className="contact-action" data-reveal-item href={siteConfig.emailHref}>
               <span className="contact-action-icon" aria-hidden="true"><FaEnvelope /></span>
               <span className="contact-action-copy">
                 <span>{t.actions.email}</span>

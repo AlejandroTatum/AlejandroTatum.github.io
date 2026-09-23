@@ -1,5 +1,81 @@
 export type Locale = "en" | "es";
 
+/* Locale selection plumbing: deep link (?lang=en|es), persistence, and URL
+   sync. Only called from client components after hydration, so the server
+   HTML and the first client render always agree (no hydration mismatch). */
+
+/** Query parameter that deep-links a locale: /?lang=en or /?lang=es. */
+export const LOCALE_QUERY_KEY = "lang";
+
+const LOCALE_STORAGE_KEY = "portfolio.locale";
+
+function isLocale(value: string | null | undefined): value is Locale {
+  return value === "en" || value === "es";
+}
+
+/** Reads a valid ?lang= deep link from a query string; null otherwise. */
+export function readLocaleFromSearch(search: string): Locale | null {
+  const value = new URLSearchParams(search).get(LOCALE_QUERY_KEY);
+  return isLocale(value) ? value : null;
+}
+
+/** Reads the persisted locale choice; null when storage is unavailable. */
+export function readPersistedLocale(): Locale | null {
+  try {
+    const value = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    return isLocale(value) ? value : null;
+  } catch {
+    return null; // storage can be blocked (private mode, sandboxed frame)
+  }
+}
+
+/** Persists the locale choice; storage failures stay silent by design. */
+export function persistLocale(locale: Locale): void {
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // storage unavailable — the in-page choice still applies
+  }
+}
+
+/** Reflects the locale in the URL so the current choice is linkable. The
+    Spanish default keeps a clean URL (?lang=es would be redundant). */
+export function syncLocaleQuery(locale: Locale): void {
+  try {
+    const url = new URL(window.location.href);
+    if (locale === "es") {
+      url.searchParams.delete(LOCALE_QUERY_KEY);
+    } else {
+      url.searchParams.set(LOCALE_QUERY_KEY, locale);
+    }
+    window.history.replaceState(null, "", url);
+  } catch {
+    // history can be unavailable in sandboxed frames — ignore
+  }
+}
+
+/** Tiny observable locale store for useSyncExternalStore. The server snapshot
+    is always the Spanish default, so hydration matches and browser-only state
+    (deep link, persisted choice) applies right after mount. */
+let activeLocale: Locale = "es";
+const localeListeners = new Set<() => void>();
+
+export const localeStore = {
+  get: (): Locale => activeLocale,
+  getServerSnapshot: (): Locale => "es",
+  subscribe: (listener: () => void) => {
+    localeListeners.add(listener);
+    return () => {
+      localeListeners.delete(listener);
+    };
+  },
+  set: (locale: Locale): void => {
+    if (locale === activeLocale) return;
+    activeLocale = locale;
+    localeListeners.forEach((listener) => listener());
+  },
+};
+
 export const copy = {
   en: {
     nav: {
@@ -72,6 +148,8 @@ export const copy = {
         linkedin: "LinkedIn",
         github: "GitHub",
         viewProfile: "View profile",
+        copyEmail: "copy email",
+        copied: "copied ✓",
       },
     },
     footer: "Built with Next.js, TypeScript, Tailwind CSS and GitHub Pages.",
@@ -147,6 +225,8 @@ export const copy = {
         linkedin: "LinkedIn",
         github: "GitHub",
         viewProfile: "Ver perfil",
+        copyEmail: "copiar email",
+        copied: "copiado ✓",
       },
     },
     footer: "Construido con Next.js, TypeScript, Tailwind CSS y GitHub Pages.",
