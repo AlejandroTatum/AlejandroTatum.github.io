@@ -755,9 +755,17 @@
 .proto-hero-status-group {
   display: inline-flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
 }
+
+/* Both the commit and proof summary must wrap inside the bar at text zoom. */
+.proto-hero-status-group:last-child {
+  display: inline;
+}
+
 
 .proto-hero-status-dot {
   display: inline-block;
@@ -771,7 +779,7 @@
 }
 
 .proto-hero-status-segment {
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .proto-hero-status-sep {
