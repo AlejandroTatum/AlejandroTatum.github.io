@@ -27,10 +27,16 @@ const promptCopy = {
   en: {
     placeholder: "type 'help' for commands",
     initial: "interactive prompt ready. type 'help' to list commands.",
+    outputLabel: "terminal output",
+    inputLabel: "terminal command input",
+    run: "run",
   },
   es: {
     placeholder: "escribe 'help' para comandos",
     initial: "prompt interactivo listo. escribe 'help' para ver comandos.",
+    outputLabel: "salida de la terminal",
+    inputLabel: "entrada de comandos de la terminal",
+    run: "ejecutar",
   },
 } as const;
 
@@ -255,11 +261,15 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
       return;
     }
     if (event.key === "Tab") {
-      event.preventDefault();
+      // Only hijack Tab when there is something to complete. With an empty
+      // (or unmatched) input, Tab keeps its default behavior so keyboard
+      // users can leave the shell instead of getting trapped inside it.
       const matches = completeCommand(value);
+      if (matches.length === 0) return;
+      event.preventDefault();
       if (matches.length === 1) {
         setValue(matches[0]);
-      } else if (matches.length > 1) {
+      } else {
         setLines((prev) => [...prev.slice(-MAX_LINES), { kind: "out", text: matches.join("   ") }]);
       }
     }
@@ -267,7 +277,7 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
 
   return (
     <div className="proto-term-shell">
-      <div className="proto-term-out" ref={outputRef} aria-live="polite" aria-label="terminal output">
+      <div className="proto-term-out" ref={outputRef} aria-live="polite" aria-label={t.outputLabel}>
         {lines.map((line, index) => (
           <div key={`${index}-${line.text}`} className={`term-line is-${line.kind}`}>
             {line.kind === "in" ? <span className="cmd-prompt">❯</span> : null}
@@ -285,13 +295,13 @@ export function ContactPrompt({ locale }: { locale: Locale }) {
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={onKeyDown}
           placeholder={t.placeholder}
-          aria-label="terminal command input"
+          aria-label={t.inputLabel}
           autoComplete="off"
           spellCheck={false}
           maxLength={80}
         />
         <button type="submit" className="proto-run-btn">
-          run ⏎
+          {t.run} ⏎
         </button>
       </form>
     </div>

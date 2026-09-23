@@ -259,6 +259,12 @@
   flex: none;
 }
 
+/* Mobile-only sections toggle — revealed in the ≤720px block below. */
+.proto-mobile-nav-btn {
+  display: none;
+  flex: none;
+}
+
 .proto-chip-btn {
   border: 1px solid var(--tborder);
   border-radius: 4px;
@@ -2113,6 +2119,72 @@
     height: 1.55rem;
   }
 
+  /* --- mobile section sheet ------------------------------------- */
+  /* The tab strip stays (scrollable, edge-faded); the sheet gives every
+     section a visible, horizontal-scroll-free entry point. Sits under
+     the fixed topbar (z 80) so the toggle stays reachable. */
+  .proto-mobile-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+  }
+
+  .proto-mobile-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 79;
+    background: rgba(8, 5, 14, 0.55);
+  }
+
+  .proto-mobile-sheet {
+    position: fixed;
+    top: 2.75rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    z-index: 79;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--tborder);
+    border-radius: 10px;
+    background: var(--tpanel);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+  }
+
+  .proto-mobile-sheet:focus {
+    outline: none;
+  }
+
+  .proto-mobile-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.72rem 0.85rem;
+    border-bottom: 1px solid var(--tborder);
+    color: var(--tdim);
+    font-size: 0.85rem;
+  }
+
+  .proto-mobile-row:last-child {
+    border-bottom: none;
+  }
+
+  .proto-mobile-row:hover {
+    color: var(--ttext);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .proto-mobile-row.is-active {
+    color: var(--ttext);
+    background: color-mix(in srgb, var(--tab-accent) 10%, transparent);
+    box-shadow: inset 2px 0 0 var(--tab-accent);
+  }
+
+  .proto-mobile-row.is-active .proto-tab-index,
+  .proto-mobile-row.is-active .proto-tab-icon {
+    color: var(--tab-accent);
+  }
+
   .proto-stack-tiles {
     margin-left: 0.9rem;
     grid-template-columns: repeat(auto-fill, minmax(8.6rem, 1fr));
@@ -2363,6 +2435,12 @@
   width: min(30rem, 100%);
   max-height: 80vh;
   overflow-y: auto;
+}
+
+/* The shortcuts dialog receives programmatic focus on open; a full-dialog
+    focus ring would just read as a rendering glitch. */
+.proto-shortcuts:focus {
+  outline: none;
 }
 
 .proto-shortcuts-group {

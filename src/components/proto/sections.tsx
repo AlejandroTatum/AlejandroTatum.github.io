@@ -247,7 +247,10 @@ function EcuadorFlag({
   );
 }
 
-function CommandLine({ cmd, comment }: { cmd: string; comment?: string }) {
+/** A terminal command line. Sections pass `heading` so the line doubles as
+    the section's `h2` — same pixels, real document outline (h1 hero → h2
+    per section). The hero keeps a plain div because its h1 is the heading. */
+function CommandLine({ cmd, comment, heading = false }: { cmd: string; comment?: string; heading?: boolean }) {
   const commentRef = useRef<HTMLSpanElement>(null);
   const retypingRef = useRef(false);
 
@@ -261,8 +264,8 @@ function CommandLine({ cmd, comment }: { cmd: string; comment?: string }) {
     });
   };
 
-  return (
-    <div className="cmd-line" onMouseEnter={retypeComment}>
+  const line = (
+    <>
       <span className="cmd-prompt" aria-hidden="true">
         $
       </span>
@@ -274,8 +277,13 @@ function CommandLine({ cmd, comment }: { cmd: string; comment?: string }) {
           {comment}
         </span>
       ) : null}
-    </div>
+    </>
   );
+
+  if (heading) {
+    return <h2 className="cmd-line" onMouseEnter={retypeComment}>{line}</h2>;
+  }
+  return <div className="cmd-line" onMouseEnter={retypeComment}>{line}</div>;
 }
 
 /** Shared scroll-reveal wiring for the below-the-fold sections. */
@@ -624,7 +632,7 @@ function AboutSection({ locale }: { locale: Locale }) {
 
   return (
     <section ref={sectionRef} id="about" data-proto-section="about" className="proto-section">
-      <CommandLine cmd={ui.aboutCmd} comment={ui.aboutComment} />
+      <CommandLine cmd={ui.aboutCmd} comment={ui.aboutComment} heading />
       <div ref={windowRef}>
         <TerminalWindow title={ui.aboutTitle}>
           <span className="proto-flash" data-flash aria-hidden="true" />
@@ -820,7 +828,7 @@ function StackSection({ locale }: { locale: Locale }) {
 
   return (
     <section ref={sectionRef} id="stack" data-proto-section="stack" className="proto-section">
-      <CommandLine cmd={ui.stackCmd} comment={ui.stackComment} />
+      <CommandLine cmd={ui.stackCmd} comment={ui.stackComment} heading />
       <TerminalWindow title={ui.stackTitle} animated>
         <div className="tui-body">
           <div className="proto-stack-featured" data-rise>
@@ -940,7 +948,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
 
   return (
     <section ref={sectionRef} id="projects" data-proto-section="projects" className="proto-section">
-      <CommandLine cmd={ui.projectsCmd} comment={ui.projectsComment} />
+      <CommandLine cmd={ui.projectsCmd} comment={ui.projectsComment} heading />
       <TerminalWindow title={ui.projectsTitle} animated>
         <div className="tui-body">
           <div className="proto-top3" data-rise>
@@ -1151,7 +1159,7 @@ function TerminalSection({ locale }: { locale: Locale }) {
 
   return (
     <section ref={sectionRef} id="terminal" data-proto-section="terminal" className="proto-section">
-      <CommandLine cmd={ui.terminalCmd} comment={ui.terminalComment} />
+      <CommandLine cmd={ui.terminalCmd} comment={ui.terminalComment} heading />
       <div className="proto-contact-grid">
         <div className="proto-guide-card" data-rise>
           <TerminalWindow title={ui.guideTitle} animated>
@@ -1223,7 +1231,7 @@ function ContactSection({ locale }: { locale: Locale }) {
 
   return (
     <section ref={sectionRef} id="contact" data-proto-section="contact" className="proto-section">
-      <CommandLine cmd={ui.contactCmd} comment={ui.contactComment} />
+      <CommandLine cmd={ui.contactCmd} comment={ui.contactComment} heading />
       <p className="proto-contact-desc" data-rise>
         {t.description}
       </p>

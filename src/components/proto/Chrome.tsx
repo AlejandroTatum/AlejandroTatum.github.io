@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { activeLinePx, isAtPageEnd, resolveActiveSection } from "@/components/proto/activeSection";
 import {
   FiCommand,
@@ -11,6 +11,7 @@ import {
   FiFolder,
   FiMail,
   FiMaximize,
+  FiMenu,
   FiTerminal,
   FiUser,
   FiX,
@@ -98,7 +99,30 @@ export function Chrome({
 }: ChromeProps) {
   const progressTextRef = useRef<HTMLSpanElement>(null);
   const progressBarRef = useRef<HTMLSpanElement>(null);
+  const mobileBtnRef = useRef<HTMLButtonElement>(null);
+  const mobileSheetRef = useRef<HTMLElement>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = protoCopy[locale];
+
+  // Mobile section sheet: focus it when it opens, close on Escape and hand
+  // focus back to the toggle — the sheet must behave like a proper dialog
+  // for keyboard and screen-reader users.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    mobileSheetRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        mobileBtnRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previous?.focus();
+    };
+  }, [mobileMenuOpen]);
 
   // Scroll-spy for the tabs. A plain scroll listener (not ScrollTrigger) so
   // it also runs under prefers-reduced-motion, where Lenis and GSAP are off.
@@ -159,6 +183,18 @@ export function Chrome({
   return (
     <>
       <div className="proto-topbar">
+        <button
+          ref={mobileBtnRef}
+          type="button"
+          className="proto-chip-btn proto-mobile-nav-btn"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="proto-mobile-sheet"
+        >
+          <FiMenu aria-hidden="true" />
+          <span>{t.tabHint}</span>
+        </button>
+
         <span className="proto-brand">
           <span className="proto-brand-path">alejandro</span>@portfolio
           <span className="proto-brand-path">:~</span>
@@ -184,6 +220,38 @@ export function Chrome({
             );
           })}
         </nav>
+
+        {mobileMenuOpen ? (
+          <>
+            <div className="proto-mobile-sheet-backdrop" aria-hidden="true" onClick={() => setMobileMenuOpen(false)} />
+            <nav
+              ref={mobileSheetRef}
+              id="proto-mobile-sheet"
+              className="proto-mobile-sheet"
+              aria-label={t.tabHint}
+              tabIndex={-1}
+            >
+              {PROTO_SECTIONS.map((section, index) => {
+                const Icon = section.icon;
+                const isActive = active === section.id;
+                return (
+                  <a
+                    key={section.id}
+                    href={`#${section.id}`}
+                    className={`proto-mobile-row${isActive ? " is-active" : ""}`}
+                    style={{ "--tab-accent": section.color } as React.CSSProperties}
+                    aria-current={isActive ? "true" : undefined}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="proto-tab-index">{index}</span>
+                    <Icon className="proto-tab-icon" aria-hidden={true} />
+                    <span className="proto-mobile-row-label">{section.label[locale]}</span>
+                  </a>
+                );
+              })}
+            </nav>
+          </>
+        ) : null}
 
         <div className="proto-topbar-right">
           <button

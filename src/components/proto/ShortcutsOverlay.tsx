@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { PROTO_SECTIONS } from "@/components/proto/Chrome";
 import { TerminalWindow } from "@/components/proto/TerminalWindow";
 import type { Locale } from "@/lib/i18n";
@@ -10,6 +11,7 @@ const overlayCopy = {
     nav: "navigation",
     shell: "guest shell",
     close: "press esc or click outside to close",
+    closeLabel: "close shortcuts",
     jk: "next / previous section",
     gg: "scroll to top",
     G: "scroll to bottom",
@@ -23,6 +25,7 @@ const overlayCopy = {
     nav: "navegación",
     shell: "shell de invitado",
     close: "presiona esc o haz clic afuera para cerrar",
+    closeLabel: "cerrar atajos",
     jk: "sección siguiente / anterior",
     gg: "ir al inicio",
     G: "ir al final",
@@ -41,12 +44,26 @@ type ShortcutsOverlayProps = {
 
 /** "?" toggles this: a read-only cheat sheet for every keyboard shortcut. */
 export function ShortcutsOverlay({ open, onClose, locale }: ShortcutsOverlayProps) {
-  if (!open) return null;
   const t = overlayCopy[locale];
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Focus the dialog when it opens and return focus to whatever triggered it
+  // when it closes, so keyboard and screen-reader users land inside the
+  // dialog instead of being left behind on the page behind the backdrop.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.focus();
+    return () => previous?.focus();
+  }, [open]);
+
+  if (!open) return null;
 
   return (
     <div className="proto-shortcuts-backdrop" onClick={onClose}>
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         className="proto-shortcuts"
         role="dialog"
         aria-modal="true"
@@ -59,7 +76,7 @@ export function ShortcutsOverlay({ open, onClose, locale }: ShortcutsOverlayProp
               type="button"
               className="bracket-btn is-ghost proto-cmdk-close proto-shortcuts-close"
               onClick={onClose}
-              aria-label={t.title}
+              aria-label={t.closeLabel}
             >
               <span className="bracket">[</span> esc <span className="bracket">]</span>
             </button>
