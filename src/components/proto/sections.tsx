@@ -92,7 +92,7 @@ const uiCopy = {
     heroComment: "# profile",
     heroHeadline: "From a business problem to a system in production.",
     heroShort:
-      "I design, build and run the whole piece: API, database, frontend and deployment. A live client site and public code to prove it.",
+      "I design, build and run the whole piece: API, database, frontend and deployment.",
     ctaProjects: "./view-projects",
     ctaContact: "./contact",
     portraitTitle: "alejandro.png — pixel viewer",
@@ -114,7 +114,7 @@ const uiCopy = {
     aboutComment: "# trajectory",
     aboutTitle: "about.md — read-only",
     aboutLede: "Computer Science student at Universidad Nacional de Loja (Ecuador).",
-    aboutChips: ["cs student @ UNL", "es native · en b1"],
+    aboutChips: ["es native · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# visual mode",
     stackTitle: "stack — capability explorer",
@@ -123,9 +123,8 @@ const uiCopy = {
     gentleName: "gentle-ai",
     gentleComment: "spec-driven dev workflow I use daily",
     projectsCmd: "ls ~/featured",
-    projectsComment: "# top 3 · client work first",
+    projectsComment: "# client work first",
     projectsTitle: "featured — top 3",
-    topSub: "the three builds that best show what I ship",
     openSite: "open",
     liveTag: "— live",
     demoTag: "— demo",
@@ -158,7 +157,7 @@ const uiCopy = {
     heroComment: "# perfil",
     heroHeadline: "De un problema de negocio a un sistema en producción.",
     heroShort:
-      "Diseño, construyo y opero la pieza completa: API, base de datos, frontend y despliegue. Un sitio de cliente en vivo y código público para comprobarlo.",
+      "Diseño, construyo y opero la pieza completa: API, base de datos, frontend y despliegue.",
     ctaProjects: "./ver-proyectos",
     ctaContact: "./contacto",
     portraitTitle: "alejandro.png — visor de píxeles",
@@ -180,7 +179,7 @@ const uiCopy = {
     aboutComment: "# trayectoria",
     aboutTitle: "sobre-mi.md — solo lectura",
     aboutLede: "Estudiante de Computación en la Universidad Nacional de Loja (Ecuador).",
-    aboutChips: ["cs @ UNL", "es nativo · en b1"],
+    aboutChips: ["es nativo · en b1"],
     stackCmd: "open ~/stack",
     stackComment: "# modo visual",
     stackTitle: "stack — explorador de capacidades",
@@ -189,9 +188,8 @@ const uiCopy = {
     gentleName: "gentle-ai",
     gentleComment: "flujo spec-driven que uso a diario",
     projectsCmd: "ls ~/destacados",
-    projectsComment: "# top 3 · trabajo de cliente primero",
+    projectsComment: "# trabajo de cliente primero",
     projectsTitle: "destacados — top 3",
-    topSub: "los tres trabajos que mejor muestran lo que entrego",
     openSite: "abrir",
     liveTag: "— en vivo",
     demoTag: "— demo",
@@ -987,7 +985,6 @@ function ProjectsSection({ locale }: { locale: Locale }) {
           <div className="proto-top3" data-rise>
             <span className="proto-top3-label">★ TOP 3</span>
             <span className="proto-top3-line" aria-hidden="true" />
-            <span className="proto-top3-sub">{ui.topSub}</span>
           </div>
 
           {/* 1 · cataclub — client build in development, not yet public.

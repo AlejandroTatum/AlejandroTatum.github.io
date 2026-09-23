@@ -32,8 +32,8 @@ export const projects: Project[] = [
     category: "client",
     proof: "upcoming",
     description: {
-      en: "CATA CLUB, Loja's table tennis club, needed one place where members and new players could find schedules, fees and a gallery. The site solves it with a public site and a private members' area with login.",
-      es: "CATA CLUB, el club de tenis de mesa de Loja, necesitaba un solo lugar donde socios y nuevos jugadores encontraran horarios, cuotas y galería. El sitio lo resuelve con un sitio público y un área privada de socios con inicio de sesión.",
+      en: "Loja's table tennis club needed one place for schedules, fees and a gallery: a public site plus a private members' area with login.",
+      es: "El club de tenis de mesa de Loja necesitaba un solo lugar con horarios, cuotas y galería: un sitio público y un área privada de socios con inicio de sesión.",
     },
     context: { en: "Client project", es: "Proyecto de cliente" },
     status: {
@@ -60,8 +60,8 @@ export const projects: Project[] = [
     demoUrl: "https://yololab.streamlit.app/",
     sourceUrl: "https://github.com/AlejandroTatum/yolo-complexity-lab",
     description: {
-      en: "Interactive computer-vision lab that benchmarks YOLO11n against Faster R-CNN and SSDLite on the same input — latency, FPS, GFLOPs and parameters — with a live webcam mode and custom-weights support.",
-      es: "Laboratorio interactivo de visión por computador que compara YOLO11n con Faster R-CNN y SSDLite sobre la misma entrada — latencia, FPS, GFLOPs y parámetros — con modo webcam en vivo y soporte de pesos propios.",
+      en: "Computer-vision lab that benchmarks YOLO11n against Faster R-CNN and SSDLite on the same input — latency, FPS, GFLOPs, parameters — with a live webcam mode and custom weights.",
+      es: "Laboratorio de visión por computador que compara YOLO11n con Faster R-CNN y SSDLite sobre la misma entrada — latencia, FPS, GFLOPs y parámetros — con webcam en vivo y pesos propios.",
     },
     context: {
       en: "Public source",
@@ -92,8 +92,8 @@ export const projects: Project[] = [
     image: "/pixel/project-horno-pixel.png",
     demoUrl: "https://elhornodelpinguino.com/",
     description: {
-      en: "Site for an artisanal bakery in Loja: catalog with pricing, business orders, FAQ and a single WhatsApp ordering flow, the channel the business actually sells through.",
-      es: "Sitio para una pastelería artesanal de Loja: catálogo con precios, pedidos para negocios, FAQ y un único flujo de pedido por WhatsApp, el canal por el que el negocio vende.",
+      en: "Artisanal bakery in Loja: catalog with pricing, business orders, FAQ and a single WhatsApp ordering flow — how the business actually sells.",
+      es: "Pastelería artesanal de Loja: catálogo con precios, pedidos para negocios, FAQ y un único flujo de pedido por WhatsApp — su canal de venta real.",
     },
     context: {
       en: "Client project",
