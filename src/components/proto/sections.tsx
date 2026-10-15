@@ -777,7 +777,7 @@ const STACK_ICONS: Record<string, IconType> = {
 /**
  * Capability tree derived from the actual apps in ~/devwork/apps — every tile
  * is backed by real code (cata_club, horno, siged, app-inventario, yolo-lab,
- * academic-report-automation, this portfolio). Design-phase experiments stay
+ * academic-report-flow, this portfolio). Design-phase experiments stay
  * out on purpose.
  */
 const STACK_TREE: Array<{ slug: string; subtitle: Record<Locale, string>; items: string[] }> = [

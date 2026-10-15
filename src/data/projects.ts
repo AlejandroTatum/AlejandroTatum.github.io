@@ -121,11 +121,11 @@ export const projects: Project[] = [
     },
   },
   {
-    title: "academic-report-automation",
+    title: "academic-report-flow",
     category: "academic",
     proof: "open-source",
     image: "/pixel/project-reports-pixel.png",
-    sourceUrl: "https://github.com/AlejandroTatum/academic-report-automation",
+    sourceUrl: "https://github.com/AlejandroTatum/academic-report-flow",
     description: {
       en: "Python toolkit that turns Markdown and YAML sources into university-grade PDF reports: a LaTeX route with bibliography and validation gates, a WeasyPrint route for fast previews, IEEE reference checks and reproducible figures.",
       es: "Kit en Python que convierte fuentes Markdown y YAML en informes PDF de nivel universitario: ruta LaTeX con bibliografía y compuertas de validación, ruta WeasyPrint para previsualización rápida, chequeo de referencias IEEE y figuras reproducibles.",
