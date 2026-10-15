@@ -10,11 +10,18 @@ Out of scope here: GitHub profile settings (bio, pins, avatar) — next feature.
 - S4 "actualiza mi perfil de git que esta hecho un asco" + user chose "También el diseño": profile README is redesigned sober and direct, centered on the production projects; Cata Club added; Horno linked to https://elhornodelpinguino.com/; frozen stats SVG and third-party streak widget removed.
 - S5 Publishing the profile README (push) waits for the user's explicit approval of the draft.
 
+- S6 "ya el readme esta en su forma base ahora quiero trasladar el diseño del portafalio alli" + user chose "Término medio": keep real Markdown as the base; add a terminal-style SVG header (whoami, name, headline, sysinfo, live status, pixel portrait) and one SVG card per production project (screenshot embedded, live dot), with section titles as prompts.
+- S7 SVG text must render on GitHub: text converted to vector paths (no @font-face), images embedded as data URIs, palette from src/app/terminal.css.
+- S8 Assets are reproducible from a committed generator; publishing again waits for the user's approval of a rendered preview.
+
 ## Tasks
 
 - T1 S1 S3 portfolio: Cata Club live (data, featured card, counts, preview) — inline — commit: daffb8d
 - T2 S2 portfolio: Horno data refresh — inline — commit: daffb8d (shared with T1)
 - T3 S4 S5 profile README redesign draft in a local clone, user approval, push — inline — commit: AlejandroTatum/AlejandroTatum@456d8c7 (pushed to main, raw README verified)
+- T4 S6 S7 S8 generator + header SVG in profile repo — inline — commit: AlejandroTatum/AlejandroTatum@bb89d74
+- T5 S6 S7 project card SVGs (cataclub, horno) — inline — commit: AlejandroTatum/AlejandroTatum@bb89d74 (shared with T4)
+- T6 S6 S8 README integration, rendered preview, approval, push — inline — commit: AlejandroTatum/AlejandroTatum@512d6f4 (pushed; live profile renders all 3 SVGs)
 
 ## Log
 
@@ -23,3 +30,5 @@ Out of scope here: GitHub profile settings (bio, pins, avatar) — next feature.
 - L3 (user): what is wrong with the README → "También el diseño" (overloaded: many SVGs, badges, sections; wants it sober, focused on production projects).
 - L4 (evidence): live README ≈ readme-profile-prototype; Horno points to *.pages.dev; cata_club repo is PUBLIC without homepage; cataclub.com and elhornodelpinguino.com return 200.
 - L5 (user): approved publishing the README draft ("Sí, publicalo").
+- L6 (user): "ya el readme esta en su forma base ahora quiero trasladar el diseño del portafalio alli"; chose "Término medio (recomendado)".
+- L7 (user): approved pushing the portfolio-styled README ("Sí, publicalo").
