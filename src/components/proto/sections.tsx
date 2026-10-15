@@ -108,8 +108,12 @@ const uiCopy = {
       [
         proofCountLabel(c.clientLive, { en: "client site live", es: "sitio de cliente en vivo" }, { en: "client sites live", es: "sitios de cliente en vivo" }, "en"),
         proofCountLabel(c.publicDemo, { en: "public demo", es: "demo pública" }, { en: "public demos", es: "demo públicas" }, "en"),
-        `${c.upcoming} ${c.upcoming === 1 ? "client build in development" : "client builds in development"}`,
-      ].join(" · "),
+        c.upcoming > 0
+          ? `${c.upcoming} ${c.upcoming === 1 ? "client build in development" : "client builds in development"}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     aboutCmd: "cat about.md",
     aboutComment: "# trajectory",
     aboutTitle: "about.md — read-only",
@@ -128,10 +132,8 @@ const uiCopy = {
     openSite: "open",
     liveTag: "— live",
     demoTag: "— demo",
-    wipBadge: "in development",
-    wipPreviewTitle: "cataclub — in development",
-    cataclubImageAlt: "Preview of the CATA CLUB website under construction",
-    hornoStatus: "live · client site",
+    cataclubImageAlt: "Preview of the CATA CLUB website",
+    liveClientStatus: "live · client site",
     hornoImageAlt: "Preview of the El Horno del Pingüino website",
     openSourceTag: "open source",
     sourceLink: "source → github",
@@ -173,8 +175,12 @@ const uiCopy = {
       [
         proofCountLabel(c.clientLive, { en: "client site live", es: "sitio de cliente en vivo" }, { en: "client sites live", es: "sitios de cliente en vivo" }, "es"),
         proofCountLabel(c.publicDemo, { en: "public demo", es: "demo pública" }, { en: "public demos", es: "demo públicas" }, "es"),
-        `${c.upcoming} ${c.upcoming === 1 ? "desarrollo de cliente en curso" : "desarrollos de cliente en curso"}`,
-      ].join(" · "),
+        c.upcoming > 0
+          ? `${c.upcoming} ${c.upcoming === 1 ? "desarrollo de cliente en curso" : "desarrollos de cliente en curso"}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     aboutCmd: "cat sobre-mi.md",
     aboutComment: "# trayectoria",
     aboutTitle: "sobre-mi.md — solo lectura",
@@ -193,10 +199,8 @@ const uiCopy = {
     openSite: "abrir",
     liveTag: "— en vivo",
     demoTag: "— demo",
-    wipBadge: "en desarrollo",
-    wipPreviewTitle: "cataclub — en desarrollo",
-    cataclubImageAlt: "Vista previa del sitio de CATA CLUB en construcción",
-    hornoStatus: "en vivo · sitio de cliente",
+    cataclubImageAlt: "Vista previa del sitio de CATA CLUB",
+    liveClientStatus: "en vivo · sitio de cliente",
     hornoImageAlt: "Vista previa del sitio de El Horno del Pingüino",
     openSourceTag: "código abierto",
     sourceLink: "código → github",
@@ -987,9 +991,8 @@ function ProjectsSection({ locale }: { locale: Locale }) {
             <span className="proto-top3-line" aria-hidden="true" />
           </div>
 
-          {/* 1 · cataclub — client build in development, not yet public.
-              All copy, tags and status come from the project data; no site
-              link is rendered because there is no public URL to verify. */}
+          {/* 1 · cataclub — live client system; like the horno card, the
+              button and preview title derive their host from the data URL */}
           {cataclub ? (
             <article id="project-cataclub" className="proto-proj is-featured" data-rise>
               <div className="proto-featured-info">
@@ -998,11 +1001,12 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                     01
                   </span>
                   <span className="proto-proj-name">▸ {cataclub.title}</span>
-                  <span className="proto-draft-badge">{ui.wipBadge}</span>
                   <span className="proto-proj-ctx">{cataclub.context[locale]}</span>
                 </div>
                 <p className="proto-proj-desc">{cataclub.description[locale]}</p>
-                <span className="proto-proj-status">{cataclub.status[locale]}</span>
+                <span className="proto-proj-status">
+                  <span className="proto-live-dot" aria-hidden="true" /> {ui.liveClientStatus}
+                </span>
                 <div className="proto-proj-tags">
                   {cataclub.tags.map((tag) => (
                     <span key={tag} className="proto-tag">
@@ -1010,9 +1014,18 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                     </span>
                   ))}
                 </div>
+                <a
+                  className="bracket-btn proto-site-btn"
+                  href={cataclub.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="bracket">[</span> {ui.openSite} {cataclub.demoUrl ? hostOf(cataclub.demoUrl) : cataclub.title} ↗{" "}
+                  <span className="bracket">]</span>
+                </a>
               </div>
               <div className="proto-featured-preview">
-                <TerminalWindow title={ui.wipPreviewTitle}>
+                <TerminalWindow title={`${cataclub.demoUrl ? hostOf(cataclub.demoUrl) : cataclub.title} ${ui.liveTag}`}>
                   <div className="proto-featured-frame">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -1046,7 +1059,7 @@ function ProjectsSection({ locale }: { locale: Locale }) {
                 </div>
                 <p className="proto-proj-desc">{horno.description[locale]}</p>
                 <span className="proto-proj-status">
-                  <span className="proto-live-dot" aria-hidden="true" /> {ui.hornoStatus}
+                  <span className="proto-live-dot" aria-hidden="true" /> {ui.liveClientStatus}
                 </span>
                 <div className="proto-proj-tags">
                   {horno.tags.map((tag) => (

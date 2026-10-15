@@ -30,25 +30,28 @@ export const projects: Project[] = [
   {
     title: "cataclub",
     category: "client",
-    proof: "upcoming",
+    proof: "client-live",
+    demoUrl: "https://cataclub.com/",
     description: {
-      en: "Loja's table tennis club needed one place for schedules, fees and a gallery: a public site plus a private members' area with login.",
-      es: "El club de tenis de mesa de Loja necesitaba un solo lugar con horarios, cuotas y galería: un sitio público y un área privada de socios con inicio de sesión.",
+      en: "Management system for Loja's table tennis club: memberships, payment validation, attendance and ranking, plus a public site and a members' portal.",
+      es: "Sistema de gestión del club de tenis de mesa de Loja: membresías, validación de pagos, asistencia y ranking, más un sitio público y un portal de socios.",
     },
     context: { en: "Client project", es: "Proyecto de cliente" },
     status: {
-      en: "In development · not yet public",
-      es: "En desarrollo · aún no público",
+      en: "Live client system · custom domain",
+      es: "Sistema de cliente en vivo · dominio propio",
     },
-    tags: ["Next.js", "FastAPI", "PostgreSQL"],
+    tags: ["Next.js", "FastAPI", "PostgreSQL", "Celery", "Docker"],
     highlights: {
       en: [
-        "Public site plus a private members' area with login.",
-        "One place for schedules, fees and a gallery.",
+        "Staff validate payments and take attendance; overdue members lose access after a grace period.",
+        "Public site plus a private members' portal with login.",
+        "Runs in production on its own domain with versioned releases per deploy.",
       ],
       es: [
-        "Sitio público más un área privada de socios con inicio de sesión.",
-        "Un solo lugar con horarios, cuotas y galería.",
+        "El personal valida pagos y toma asistencia; los socios en mora pierden acceso tras un período de gracia.",
+        "Sitio público más un portal privado de socios con inicio de sesión.",
+        "En producción con dominio propio y versiones numeradas por cada despliegue.",
       ],
     },
   },
@@ -92,8 +95,8 @@ export const projects: Project[] = [
     image: "/pixel/project-horno-pixel.png",
     demoUrl: "https://elhornodelpinguino.com/",
     description: {
-      en: "Artisanal bakery in Loja: catalog with pricing, business orders, FAQ and a single WhatsApp ordering flow — how the business actually sells.",
-      es: "Pastelería artesanal de Loja: catálogo con precios, pedidos para negocios, FAQ y un único flujo de pedido por WhatsApp — su canal de venta real.",
+      en: "Artisanal bakery in Loja: a storefront with catalog, business orders, FAQ and a single WhatsApp ordering flow, plus an admin panel where the owners keep products, banners and FAQ up to date themselves.",
+      es: "Pastelería artesanal de Loja: tienda con catálogo, pedidos para negocios, FAQ y un único flujo de pedido por WhatsApp, más un panel de administración donde los dueños mantienen productos, banners y preguntas frecuentes sin depender de mí.",
     },
     context: {
       en: "Client project",
@@ -103,17 +106,17 @@ export const projects: Project[] = [
       en: "Live client site · custom domain",
       es: "Sitio de cliente en vivo · dominio propio",
     },
-    tags: ["Frontend", "Responsive", "Landing Page", "WhatsApp CTA", "Cloudflare Pages"],
+    tags: ["Astro", "Next.js", "Prisma", "PostgreSQL", "WhatsApp CTA"],
     highlights: {
       en: [
         "Built the full responsive storefront: catalog, flavors, bulk orders, FAQ and a three-step ordering guide.",
+        "The catalog comes from a Next.js + Prisma admin panel; a nightly rebuild publishes the owners' changes with no code edits.",
         "Every section funnels into one WhatsApp CTA, matching how the business closes sales.",
-        "Shipped on a custom domain; the business source stays private.",
       ],
       es: [
         "Construí la tienda completa y responsive: catálogo, sabores, pedidos al por mayor, FAQ y guía de pedido en tres pasos.",
+        "El catálogo sale de un panel de administración en Next.js + Prisma; una reconstrucción nocturna publica los cambios de los dueños sin tocar código.",
         "Cada sección desemboca en un único CTA de WhatsApp, que es como el negocio cierra ventas.",
-        "Publicado en dominio propio; el código del negocio se mantiene privado.",
       ],
     },
   },

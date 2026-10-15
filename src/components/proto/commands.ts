@@ -74,6 +74,26 @@ const PUBLIC_DEMO = proofCount("public-demo");
 const UPCOMING = proofCount("upcoming");
 const ARCHIVED = proofCount("open-source");
 
+/** Shell `projects` summary; singular-aware and silent about zero counts so
+    it never prints "0 in development" once every client build is live. */
+function projectsSummary(locale: Locale): string {
+  const segments =
+    locale === "en"
+      ? [
+          `${CLIENT_LIVE} ${CLIENT_LIVE === 1 ? "client site" : "client sites"} live`,
+          `${PUBLIC_DEMO} ${PUBLIC_DEMO === 1 ? "public demo" : "public demos"}`,
+          UPCOMING > 0 ? `${UPCOMING} in development` : null,
+          `${ARCHIVED} in .archive`,
+        ]
+      : [
+          `${CLIENT_LIVE} ${CLIENT_LIVE === 1 ? "sitio de cliente en vivo" : "sitios de cliente en vivo"}`,
+          `${PUBLIC_DEMO} ${PUBLIC_DEMO === 1 ? "demo pública" : "demos públicas"}`,
+          UPCOMING > 0 ? `${UPCOMING} en desarrollo` : null,
+          `${ARCHIVED} en .archive`,
+        ];
+  return segments.filter(Boolean).join(", ");
+}
+
 /** Exact promptCopy strings the guest shell has always printed — kept
     verbatim so `help`, `whoami`, `stack`, `projects`, `contact` and
     `sudo hire-me` never drift from the original copy. */
@@ -83,7 +103,7 @@ const shellOutput = {
       "alejandro padilla — full-stack developer · applied ai · open to part-time / contract",
     stack:
       "gentle-ai at the core + 8 branches: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (run `open ~/stack` above)",
-    projects: `${CLIENT_LIVE} client site live, ${PUBLIC_DEMO} public demo, ${UPCOMING} in development, ${ARCHIVED} in .archive — run \`ls -a ~/projects\` for everything`,
+    projects: `${projectsSummary("en")} — run \`ls -a ~/projects\` for everything`,
     contact:
       "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
     sudo: "[sudo] access granted — part-time / contract · remote · US overlap · next step: mail alejandro.padilla@unl.edu.ec",
@@ -93,7 +113,7 @@ const shellOutput = {
       "alejandro padilla — desarrollador full-stack · ia aplicada · disponible part-time / contrato",
     stack:
       "gentle-ai en el núcleo + 8 ramas: automation-ai / languages / frontend / backend / data / computer-vision / quality / devops  (ejecuta `open ~/stack` arriba)",
-    projects: `${CLIENT_LIVE} sitio de cliente en vivo, ${PUBLIC_DEMO} demo pública, ${UPCOMING} en desarrollo, ${ARCHIVED} en .archive — ejecuta \`ls -a ~/proyectos\` para ver todo`,
+    projects: `${projectsSummary("es")} — ejecuta \`ls -a ~/proyectos\` para ver todo`,
     contact:
       "mail → alejandro.padilla@unl.edu.ec · github → github.com/AlejandroTatum · linkedin → /in/alejandro-emanuel-padilla-espinoza",
     sudo: "[sudo] acceso concedido — part-time / contrato · remoto · horario EE. UU. · siguiente paso: escribe a alejandro.padilla@unl.edu.ec",
