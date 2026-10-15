@@ -12,9 +12,9 @@ Out of scope here: GitHub profile settings (bio, pins, avatar) — next feature.
 
 ## Tasks
 
-- T1 S1 S3 portfolio: Cata Club live (data, featured card, counts, preview) — inline — commit: see T2 (shared)
-- T2 S2 portfolio: Horno data refresh — inline — commit: pending
-- T3 S4 S5 profile README redesign draft in a local clone, user approval, push — inline — commit: pending
+- T1 S1 S3 portfolio: Cata Club live (data, featured card, counts, preview) — inline — commit: daffb8d
+- T2 S2 portfolio: Horno data refresh — inline — commit: daffb8d (shared with T1)
+- T3 S4 S5 profile README redesign draft in a local clone, user approval, push — inline — commit: AlejandroTatum/AlejandroTatum@456d8c7 (pushed to main, raw README verified)
 
 ## Log
 
@@ -22,3 +22,4 @@ Out of scope here: GitHub profile settings (bio, pins, avatar) — next feature.
 - L2 (user): "perfil de git" = README del perfil (AlejandroTatum/AlejandroTatum); "arreglar el perfil de GitHub" later = bio, pins, avatar, settings.
 - L3 (user): what is wrong with the README → "También el diseño" (overloaded: many SVGs, badges, sections; wants it sober, focused on production projects).
 - L4 (evidence): live README ≈ readme-profile-prototype; Horno points to *.pages.dev; cata_club repo is PUBLIC without homepage; cataclub.com and elhornodelpinguino.com return 200.
+- L5 (user): approved publishing the README draft ("Sí, publicalo").
